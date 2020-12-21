@@ -10,7 +10,7 @@ Back-end do App de Contador para Shiny Hunters. Projeto em fase inicial de desen
 
 ## Funcionalidades
 
-- [X] CRUD de nomes de Pokémon
+- [ ] CRUD de nomes de Pokémon
 - [ ] CRUD de formas de Pokémon
 - [ ] CRUD de jogos de Pokémon
 - [ ] CRUD de métodos de Shiny Hunt
