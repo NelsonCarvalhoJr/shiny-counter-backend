@@ -1,25 +1,27 @@
+import { getRepository } from 'typeorm';
+
 import Pokemon from '../models/Pokemon';
-import PokemonsRepository from '../repositories/PokemonsRepository';
 
 interface IRequest {
   name: string;
 }
 
 class CreatePokemonService {
-  private pokemonsRepository: PokemonsRepository;
+  public async execute({ name }: IRequest): Promise<Pokemon> {
+    const pokemonsRepository = getRepository(Pokemon);
 
-  constructor(pokemonsRepository: PokemonsRepository) {
-    this.pokemonsRepository = pokemonsRepository;
-  }
-
-  public execute({ name }: IRequest): Pokemon {
-    const findByName = this.pokemonsRepository.findOneByName(name);
+    const findByName = await pokemonsRepository
+      .createQueryBuilder()
+      .where('LOWER(name) = LOWER(:name)', { name })
+      .getOne();
 
     if (findByName) {
       throw Error('This pokémon already exists');
     }
 
-    const pokemon = this.pokemonsRepository.create({ name });
+    const pokemon = pokemonsRepository.create({ name });
+
+    await pokemonsRepository.save(pokemon);
 
     return pokemon;
   }

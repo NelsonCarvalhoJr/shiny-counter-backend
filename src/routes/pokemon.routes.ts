@@ -1,38 +1,31 @@
 import Router from 'express';
-import { v4 as uuid } from 'uuid';
 
-import PokemonsRepository from '../repositories/PokemonsRepository';
-
+import ListPokemonsService from '../services/ListPokemonsService';
 import CreatePokemonService from '../services/CreatePokemonService';
 import DeletePokemonService from '../services/DeletePokemonService';
 import UpdatePokemonService from '../services/UpdatePokemonService';
 
 const pokemonRouter = Router();
-const pokemonsRepository = new PokemonsRepository();
 
-pokemonRouter.get('/', (request, response) => {
+pokemonRouter.get('/', async (request, response) => {
   const { name } = request.query;
 
   const parsedName = name as string;
 
-  let pokemon = [];
+  const listPokemons = new ListPokemonsService();
 
-  if (parsedName) {
-    pokemon = pokemonsRepository.findAllByName(parsedName);
-  } else {
-    pokemon = pokemonsRepository.all();
-  }
+  const pokemons = await listPokemons.execute({ name: parsedName });
 
-  return response.json(pokemon);
+  return response.json(pokemons);
 });
 
-pokemonRouter.post('/', (request, response) => {
+pokemonRouter.post('/', async (request, response) => {
   try {
     const { name } = request.body;
 
-    const createPokemon = new CreatePokemonService(pokemonsRepository);
+    const createPokemon = new CreatePokemonService();
 
-    const pokemon = createPokemon.execute({ name });
+    const pokemon = await createPokemon.execute({ name });
 
     return response.json(pokemon);
   } catch (error) {
@@ -40,15 +33,15 @@ pokemonRouter.post('/', (request, response) => {
   }
 });
 
-pokemonRouter.put('/:id', (request, response) => {
+pokemonRouter.put('/:id', async (request, response) => {
   try {
     const { id } = request.params;
 
     const { name } = request.body;
 
-    const updatePokemon = new UpdatePokemonService(pokemonsRepository);
+    const updatePokemon = new UpdatePokemonService();
 
-    const pokemon = updatePokemon.execute({ id, name });
+    const pokemon = await updatePokemon.execute({ id, name });
 
     return response.json(pokemon);
   } catch (error) {
@@ -56,13 +49,13 @@ pokemonRouter.put('/:id', (request, response) => {
   }
 });
 
-pokemonRouter.delete('/:id', (request, response) => {
+pokemonRouter.delete('/:id', async (request, response) => {
   try {
     const { id } = request.params;
 
-    const deletePokemon = new DeletePokemonService(pokemonsRepository);
+    const deletePokemon = new DeletePokemonService();
 
-    deletePokemon.execute({ id });
+    await deletePokemon.execute({ id });
 
     return response.status(204).send();
   } catch (error) {

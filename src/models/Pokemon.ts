@@ -1,14 +1,24 @@
-import { v4 as uuid } from 'uuid';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
+@Entity('pokemons')
 class Pokemon {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column()
   name: string;
 
-  constructor({ name }: Omit<Pokemon, 'id'>) {
-    this.id = uuid();
-    this.name = name;
-  }
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }
 
 export default Pokemon;
