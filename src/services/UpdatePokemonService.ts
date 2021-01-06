@@ -11,11 +11,7 @@ class UpdatePokemonService {
   public async execute({ id, name }: IRequest): Promise<Pokemon> {
     const pokemonsRepository = getRepository(Pokemon);
 
-    const pokemon = await pokemonsRepository.findOne({
-      where: {
-        id,
-      },
-    });
+    const pokemon = await pokemonsRepository.findOne(id);
 
     if (!pokemon) {
       throw Error("This pokémon ID doesn't exists");

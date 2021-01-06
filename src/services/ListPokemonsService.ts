@@ -18,7 +18,7 @@ class ListPokemonsService {
       });
     }
 
-    const pokemons = queryBuilder.getMany();
+    const pokemons = await queryBuilder.getMany();
 
     return pokemons;
   }

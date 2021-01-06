@@ -2,12 +2,12 @@ import Router from 'express';
 
 import ListPokemonsService from '../services/ListPokemonsService';
 import CreatePokemonService from '../services/CreatePokemonService';
-import DeletePokemonService from '../services/DeletePokemonService';
 import UpdatePokemonService from '../services/UpdatePokemonService';
+import DeletePokemonService from '../services/DeletePokemonService';
 
-const pokemonRouter = Router();
+const pokemonsRouter = Router();
 
-pokemonRouter.get('/', async (request, response) => {
+pokemonsRouter.get('/', async (request, response) => {
   const { name } = request.query;
 
   const parsedName = name as string;
@@ -19,7 +19,7 @@ pokemonRouter.get('/', async (request, response) => {
   return response.json(pokemons);
 });
 
-pokemonRouter.post('/', async (request, response) => {
+pokemonsRouter.post('/', async (request, response) => {
   try {
     const { name } = request.body;
 
@@ -33,7 +33,7 @@ pokemonRouter.post('/', async (request, response) => {
   }
 });
 
-pokemonRouter.put('/:id', async (request, response) => {
+pokemonsRouter.put('/:id', async (request, response) => {
   try {
     const { id } = request.params;
 
@@ -49,7 +49,7 @@ pokemonRouter.put('/:id', async (request, response) => {
   }
 });
 
-pokemonRouter.delete('/:id', async (request, response) => {
+pokemonsRouter.delete('/:id', async (request, response) => {
   try {
     const { id } = request.params;
 
@@ -63,4 +63,4 @@ pokemonRouter.delete('/:id', async (request, response) => {
   }
 });
 
-export default pokemonRouter;
+export default pokemonsRouter;

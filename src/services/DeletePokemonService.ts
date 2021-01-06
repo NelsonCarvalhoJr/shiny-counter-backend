@@ -10,11 +10,7 @@ class DeletePokemonService {
   public async execute({ id }: IRequest): Promise<void> {
     const pokemonsRepository = getRepository(Pokemon);
 
-    const pokemon = await pokemonsRepository.findOne({
-      where: {
-        id,
-      },
-    });
+    const pokemon = await pokemonsRepository.findOne(id);
 
     if (!pokemon) {
       throw Error("This pokémon ID doesn't exists");
