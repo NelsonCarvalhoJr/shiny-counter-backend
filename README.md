@@ -8,7 +8,7 @@ Back-end do App de Contador para Shiny Hunters. Projeto em fase inicial de desen
 | ----------- | ----------- |
 | pokemon | id, name, pokedex_number |
 | form | id, name, image_url, shiny_image_url, pokemon_id |
-| game | id, name |
+| game | id, name, generation_number |
 | method | id, name |
 | games_methods | id, game_id, method_id | 
 | route | id, name |
@@ -26,7 +26,7 @@ Back-end do App de Contador para Shiny Hunters. Projeto em fase inicial de desen
 - [x] CRUD de métodos de Shiny Hunt
 - [x] CRUD de rotas
 - [ ] Relação Rota x Método x Forma
-- [ ] CRUD de usuários
+- [X] CRUD de usuários
 - [ ] CRUD de caçadas
 - [ ] CRUD do contador
 
