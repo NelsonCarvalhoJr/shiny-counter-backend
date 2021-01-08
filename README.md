@@ -6,7 +6,7 @@ Back-end do App de Contador para Shiny Hunters. Projeto em fase inicial de desen
 
 | Entidades | Atributos |
 | ----------- | ----------- |
-| pokemon | id, name |
+| pokemon | id, name, pokedex_number |
 | form | id, name, image_url, shiny_image_url, pokemon_id |
 | game | id, name |
 | method | id, name |
