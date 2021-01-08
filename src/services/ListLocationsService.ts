@@ -1,4 +1,4 @@
-import { getRepository } from 'typeorm';
+import { getRepository, FindOperator, Raw } from 'typeorm';
 
 import Location from '../models/Location';
 
@@ -6,19 +6,22 @@ interface IRequest {
   name: string;
 }
 
+interface IFindConditions {
+  name: FindOperator<any>;
+}
+
 class ListLocationsService {
-  public async execute({ name }: IRequest): Promise<Location[]> {
+  public async execute({ name = '' }: IRequest): Promise<Location[]> {
     const locationsRepository = getRepository(Location);
 
-    const queryBuilder = await locationsRepository.createQueryBuilder();
+    const findOptions: IFindConditions = {
+      name: Raw(alias => `LOWER(${alias}) Like '%${name.toLowerCase()}%'`),
+    };
 
-    if (name) {
-      queryBuilder.where('LOWER(name) LIKE :name', {
-        name: `%${name.toLowerCase()}%`,
-      });
-    }
-
-    const locations = await queryBuilder.getMany();
+    const locations = await locationsRepository.find({
+      where: findOptions,
+      order: { name: 'ASC' },
+    });
 
     return locations;
   }
