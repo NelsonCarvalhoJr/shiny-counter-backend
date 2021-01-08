@@ -14,6 +14,9 @@ class Pokemon {
   @Column()
   name: string;
 
+  @Column()
+  pokedex_number: number;
+
   @CreateDateColumn()
   created_at: Date;
 

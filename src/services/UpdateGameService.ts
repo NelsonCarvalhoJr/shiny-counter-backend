@@ -5,10 +5,15 @@ import Game from '../models/Game';
 interface IRequest {
   id: string;
   name: string;
+  generation_number: number;
 }
 
 class UpdateGameService {
-  public async execute({ id, name }: IRequest): Promise<Game> {
+  public async execute({
+    id,
+    name,
+    generation_number,
+  }: IRequest): Promise<Game> {
     const gamesRepository = getRepository(Game);
 
     const game = await gamesRepository.findOne(id);
@@ -27,6 +32,7 @@ class UpdateGameService {
     }
 
     game.name = name;
+    game.generation_number = generation_number;
 
     await gamesRepository.save(game);
 

@@ -4,11 +4,16 @@ import Game from '../models/Game';
 
 interface IRequest {
   name: string;
-  method_id?: string[];
+  generation_number: number;
+  method_id: string[];
 }
 
 class CreateGameService {
-  public async execute({ name, method_id = [] }: IRequest): Promise<Game> {
+  public async execute({
+    name,
+    generation_number,
+    method_id = [],
+  }: IRequest): Promise<Game> {
     const gamesRepository = getRepository(Game);
 
     const findByName = await gamesRepository
@@ -29,6 +34,7 @@ class CreateGameService {
     const game = gamesRepository.create({
       name,
       game_methods,
+      generation_number,
     });
 
     await gamesRepository.save(game);

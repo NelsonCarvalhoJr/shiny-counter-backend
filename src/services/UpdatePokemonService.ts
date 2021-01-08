@@ -5,10 +5,15 @@ import Pokemon from '../models/Pokemon';
 interface IRequest {
   id: string;
   name: string;
+  pokedex_number: number;
 }
 
 class UpdatePokemonService {
-  public async execute({ id, name }: IRequest): Promise<Pokemon> {
+  public async execute({
+    id,
+    name,
+    pokedex_number,
+  }: IRequest): Promise<Pokemon> {
     const pokemonsRepository = getRepository(Pokemon);
 
     const pokemon = await pokemonsRepository.findOne(id);
@@ -26,7 +31,18 @@ class UpdatePokemonService {
       throw Error('This pokémon already exists');
     }
 
+    const findByPokedexNumber = await pokemonsRepository.findOne({
+      where: {
+        pokedex_number,
+      },
+    });
+
+    if (findByPokedexNumber && findByPokedexNumber.id !== id) {
+      throw Error('This pokédex number already exists');
+    }
+
     pokemon.name = name;
+    pokemon.pokedex_number = pokedex_number;
 
     await pokemonsRepository.save(pokemon);
 

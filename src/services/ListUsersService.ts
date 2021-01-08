@@ -1,31 +1,30 @@
-import { getRepository } from 'typeorm';
+import { getRepository, FindOperator, Raw } from 'typeorm';
 
 import User from '../models/User';
 
 interface IRequest {
-  name?: string;
-  email?: string;
+  name: string;
+  email: string;
+}
+
+interface IFindConditions {
+  name: FindOperator<any>;
+  email: FindOperator<any>;
 }
 
 class ListUsersService {
-  public async execute({ name, email }: IRequest): Promise<User[]> {
+  public async execute({ name = '', email = '' }: IRequest): Promise<User[]> {
     const usersRepository = getRepository(User);
 
-    const queryBuilder = await usersRepository.createQueryBuilder();
+    const findOptions: IFindConditions = {
+      name: Raw(alias => `LOWER(${alias}) Like '%${name.toLowerCase()}%'`),
+      email: Raw(alias => `LOWER(${alias}) Like '%${email.toLowerCase()}%'`),
+    };
 
-    if (name) {
-      queryBuilder.where('LOWER(name) LIKE :name', {
-        name: `%${name.toLowerCase()}%`,
-      });
-    }
-
-    if (email) {
-      queryBuilder.where('LOWER(email) LIKE :email', {
-        email: `%${email.toLowerCase()}%`,
-      });
-    }
-
-    const users = await queryBuilder.getMany();
+    const users = await usersRepository.find({
+      where: findOptions,
+      order: { name: 'ASC' },
+    });
 
     const formattedUsers = users.map(user => {
       const formattedUser = user;

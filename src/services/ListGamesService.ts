@@ -1,24 +1,37 @@
-import { getRepository } from 'typeorm';
+import { getRepository, FindOperator, Raw } from 'typeorm';
 
 import Game from '../models/Game';
 
 interface IRequest {
-  name?: string;
+  name: string;
+  generation_number: number;
+}
+
+interface IFindConditions {
+  name: FindOperator<any>;
+  generation_number?: number;
 }
 
 class ListGamesService {
-  public async execute({ name }: IRequest): Promise<Game[]> {
+  public async execute({
+    name = '',
+    generation_number,
+  }: IRequest): Promise<Game[]> {
     const gamesRepository = getRepository(Game);
 
-    const queryBuilder = await gamesRepository.createQueryBuilder('');
+    const findOptions: IFindConditions = {
+      name: Raw(alias => `LOWER(${alias}) Like '%${name.toLowerCase()}%'`),
+      generation_number,
+    };
 
-    if (name) {
-      queryBuilder.where('LOWER(name) LIKE :name', {
-        name: `%${name.toLowerCase()}%`,
-      });
+    if (!generation_number) {
+      delete findOptions.generation_number;
     }
 
-    const games = await queryBuilder.getMany();
+    const games = await gamesRepository.find({
+      where: findOptions,
+      order: { generation_number: 'ASC' },
+    });
 
     return games;
   }

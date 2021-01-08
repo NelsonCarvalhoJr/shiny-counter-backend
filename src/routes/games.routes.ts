@@ -10,24 +10,32 @@ import RemoveMethodsService from '../services/RemoveMethodsService';
 const gamesRouter = Router();
 
 gamesRouter.get('/', async (request, response) => {
-  const { name } = request.query;
+  const { name, generation_number } = request.query;
 
   const parsedName = name as string;
+  const parsedGenerationNumber = Number(generation_number);
 
   const listGames = new ListGamesService();
 
-  const games = await listGames.execute({ name: parsedName });
+  const games = await listGames.execute({
+    name: parsedName,
+    generation_number: parsedGenerationNumber,
+  });
 
   return response.json(games);
 });
 
 gamesRouter.post('/', async (request, response) => {
   try {
-    const { name, method_id } = request.body;
+    const { name, method_id, generation_number } = request.body;
 
     const createGame = new CreateGameService();
 
-    const game = await createGame.execute({ name, method_id });
+    const game = await createGame.execute({
+      name,
+      method_id,
+      generation_number,
+    });
 
     return response.json(game);
   } catch (error) {
@@ -39,11 +47,11 @@ gamesRouter.put('/:id', async (request, response) => {
   try {
     const { id } = request.params;
 
-    const { name } = request.body;
+    const { name, generation_number } = request.body;
 
     const updateGame = new UpdateGameService();
 
-    const game = await updateGame.execute({ id, name });
+    const game = await updateGame.execute({ id, name, generation_number });
 
     return response.json(game);
   } catch (error) {
