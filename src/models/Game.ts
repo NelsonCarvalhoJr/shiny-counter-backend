@@ -23,6 +23,9 @@ class Game {
   @Column()
   name: string;
 
+  @Column()
+  generation_number: number;
+
   @CreateDateColumn()
   created_at: Date;
 

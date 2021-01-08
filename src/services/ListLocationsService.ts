@@ -3,7 +3,7 @@ import { getRepository } from 'typeorm';
 import Location from '../models/Location';
 
 interface IRequest {
-  name?: string;
+  name: string;
 }
 
 class ListLocationsService {

@@ -3,8 +3,8 @@ import { getRepository } from 'typeorm';
 import Method from '../models/Method';
 
 interface IRequest {
-  name?: string;
-  game_id?: string;
+  name: string;
+  game_id: string;
 }
 
 class ListMethodsService {

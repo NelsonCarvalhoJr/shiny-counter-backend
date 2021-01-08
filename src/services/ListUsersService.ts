@@ -3,8 +3,8 @@ import { getRepository } from 'typeorm';
 import User from '../models/User';
 
 interface IRequest {
-  name?: string;
-  email?: string;
+  name: string;
+  email: string;
 }
 
 class ListUsersService {
