@@ -21,7 +21,7 @@ app.use(routes);
 
 app.use(
   async (err: Error, request: Request, response: Response, _: NextFunction) => {
-    if (request.file.filename) {
+    if (request.file) {
       const userAvatarFilePath = path.join(
         uploadConfig.directory,
         request.file.filename,
