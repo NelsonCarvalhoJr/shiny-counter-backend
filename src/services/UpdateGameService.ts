@@ -2,6 +2,8 @@ import { getRepository } from 'typeorm';
 
 import Game from '../models/Game';
 
+import AppError from '../errors/AppError';
+
 interface IRequest {
   id: string;
   name: string;
@@ -19,7 +21,7 @@ class UpdateGameService {
     const game = await gamesRepository.findOne(id);
 
     if (!game) {
-      throw Error("This game ID doesn't exists");
+      throw new AppError("This game ID doesn't exists", 404);
     }
 
     const findByName = await gamesRepository
@@ -28,7 +30,7 @@ class UpdateGameService {
       .getOne();
 
     if (findByName && findByName.id !== id) {
-      throw Error('This game already exists');
+      throw new AppError('This game already exists');
     }
 
     game.name = name;

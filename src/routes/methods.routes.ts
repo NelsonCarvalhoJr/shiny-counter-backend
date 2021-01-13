@@ -24,47 +24,35 @@ methodsRouter.get('/', async (request, response) => {
 });
 
 methodsRouter.post('/', async (request, response) => {
-  try {
-    const { name } = request.body;
+  const { name } = request.body;
 
-    const createMethod = new CreateMethodService();
+  const createMethod = new CreateMethodService();
 
-    const method = await createMethod.execute({ name });
+  const method = await createMethod.execute({ name });
 
-    return response.json(method);
-  } catch (error) {
-    return response.status(400).json({ error: error.message });
-  }
+  return response.json(method);
 });
 
 methodsRouter.put('/:id', async (request, response) => {
-  try {
-    const { id } = request.params;
+  const { id } = request.params;
 
-    const { name } = request.body;
+  const { name } = request.body;
 
-    const updateMethod = new UpdateMethodService();
+  const updateMethod = new UpdateMethodService();
 
-    const method = await updateMethod.execute({ id, name });
+  const method = await updateMethod.execute({ id, name });
 
-    return response.json(method);
-  } catch (error) {
-    return response.status(400).json({ error: error.message });
-  }
+  return response.json(method);
 });
 
 methodsRouter.delete('/:id', async (request, response) => {
-  try {
-    const { id } = request.params;
+  const { id } = request.params;
 
-    const deleteMethod = new DeleteMethodService();
+  const deleteMethod = new DeleteMethodService();
 
-    await deleteMethod.execute({ id });
+  await deleteMethod.execute({ id });
 
-    return response.status(204).send();
-  } catch (error) {
-    return response.status(400).json({ error: error.message });
-  }
+  return response.status(204).send();
 });
 
 export default methodsRouter;

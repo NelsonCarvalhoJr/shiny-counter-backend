@@ -2,6 +2,8 @@ import { getRepository } from 'typeorm';
 
 import Pokemon from '../models/Pokemon';
 
+import AppError from '../errors/AppError';
+
 interface IRequest {
   name: string;
   pokedex_number: number;
@@ -17,7 +19,7 @@ class CreatePokemonService {
       .getOne();
 
     if (findByName) {
-      throw Error('This pokémon already exists');
+      throw new AppError('This pokémon already exists');
     }
 
     const findByPokedexNumber = await pokemonsRepository.findOne({
@@ -27,7 +29,7 @@ class CreatePokemonService {
     });
 
     if (findByPokedexNumber) {
-      throw Error('This pokédex number already exists');
+      throw new AppError('This pokédex number already exists');
     }
 
     const pokemon = pokemonsRepository.create({ name, pokedex_number });

@@ -4,6 +4,8 @@ import Game from '../models/Game';
 import Method from '../models/Method';
 import GamesMethods from '../models/GamesMethods';
 
+import AppError from '../errors/AppError';
+
 interface IRequest {
   id: string;
   method_id: string[];
@@ -18,7 +20,7 @@ class AddMethodsService {
     let game = await gamesRepository.findOne(id);
 
     if (!game) {
-      throw Error("This game ID doesn't exists");
+      throw new AppError("This game ID doesn't exists", 404);
     }
 
     const methods = await methodsRepositorty.findByIds(method_id);
@@ -32,10 +34,11 @@ class AddMethodsService {
         );
       });
 
-      throw Error(
+      throw new AppError(
         `Method(s) ID(s) ${JSON.stringify(invalidMethodIds)
           .split('"')
           .join('')} doesn't exist(s)`,
+        404,
       );
     }
 
@@ -49,7 +52,7 @@ class AddMethodsService {
     if (methodsInGame.length > 0) {
       const methodIdsFound = methodsInGame.map(method => method.method_id);
 
-      throw Error(
+      throw new AppError(
         `Method(s) ID(s) ${JSON.stringify(methodIdsFound)
           .split('"')
           .join('')} already exist(s) in this game`,

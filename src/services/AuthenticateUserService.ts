@@ -6,6 +6,8 @@ import authConfig from '../config/auth';
 
 import User from '../models/User';
 
+import AppError from '../errors/AppError';
+
 interface IRequest {
   email: string;
   password: string;
@@ -26,13 +28,13 @@ class AuthenticateUserService {
       .getOne();
 
     if (!user) {
-      throw Error('Invalid email/password combination');
+      throw new AppError('Invalid email/password combination', 401);
     }
 
     const passwordMached = await compare(password, user?.password as string);
 
     if (!passwordMached) {
-      throw Error('Invalid email/password combination');
+      throw new AppError('Invalid email/password combination', 401);
     }
 
     const { secret, expiresIn } = authConfig.jwt;

@@ -16,47 +16,39 @@ const upload = multer(uploadConfig);
 
 // Manage Profile
 usersRouter.put('/profile', ensureAuthenticated, async (request, response) => {
-  try {
-    const { id } = request.user;
+  const { id } = request.user;
 
-    const { name, email, password, old_password } = request.body;
+  const { name, email, password, old_password } = request.body;
 
-    const updateUser = new UpdateUserService();
+  const updateUser = new UpdateUserService();
 
-    const user = await updateUser.execute({
-      id,
-      name,
-      email,
-      old_password,
-      password,
-    });
+  const user = await updateUser.execute({
+    id,
+    name,
+    email,
+    old_password,
+    password,
+  });
 
-    delete user.password;
+  delete user.password;
 
-    return response.json(user);
-  } catch (error) {
-    return response.status(400).json({ error: error.message });
-  }
+  return response.json(user);
 });
 usersRouter.patch(
   '/avatar',
   ensureAuthenticated,
   upload.single('avatar'),
   async (request, response) => {
-    try {
-      const updateAvatar = new UpdateAvatarService();
+    const updateAvatar = new UpdateAvatarService();
 
-      const user = await updateAvatar.execute({
-        user_id: request.user.id,
-        avatarFilename: request.file.filename,
-      });
+    const user = await updateAvatar.execute({
+      user_id: request.user.id,
+      avatarFilename: request.file.filename,
+    });
 
-      delete user.password;
+    delete user.password;
 
-      return response.json(user);
-    } catch (error) {
-      return response.status(400).json({ error: error.message });
-    }
+    return response.json(user);
   },
 );
 
@@ -78,78 +70,62 @@ usersRouter.get('/', async (request, response) => {
 });
 
 usersRouter.post('/', async (request, response) => {
-  try {
-    const { name, email, password } = request.body;
+  const { name, email, password } = request.body;
 
-    const createUser = new CreateUserService();
+  const createUser = new CreateUserService();
 
-    const user = await createUser.execute({ name, email, password });
+  const user = await createUser.execute({ name, email, password });
 
-    delete user.password;
+  delete user.password;
 
-    return response.json(user);
-  } catch (error) {
-    return response.status(400).json({ error: error.message });
-  }
+  return response.json(user);
 });
 
 usersRouter.put('/:id', async (request, response) => {
-  try {
-    const { id } = request.params;
+  const { id } = request.params;
 
-    const { name, email, password, old_password } = request.body;
+  const { name, email, password, old_password } = request.body;
 
-    const updateUser = new UpdateUserService();
+  const updateUser = new UpdateUserService();
 
-    const user = await updateUser.execute({
-      id,
-      name,
-      email,
-      old_password,
-      password,
-    });
+  const user = await updateUser.execute({
+    id,
+    name,
+    email,
+    old_password,
+    password,
+  });
 
-    delete user.password;
+  delete user.password;
 
-    return response.json(user);
-  } catch (error) {
-    return response.status(400).json({ error: error.message });
-  }
+  return response.json(user);
 });
 
 usersRouter.patch(
   '/avatar/:id',
   upload.single('avatar'),
   async (request, response) => {
-    try {
-      const updateAvatar = new UpdateAvatarService();
+    const updateAvatar = new UpdateAvatarService();
 
-      const user = await updateAvatar.execute({
-        user_id: request.params.id,
-        avatarFilename: request.file.filename,
-      });
+    const user = await updateAvatar.execute({
+      user_id: request.params.id,
+      avatarFilename: request.file.filename,
+    });
 
-      delete user.password;
+    delete user.password;
 
-      return response.json(user);
-    } catch (error) {
-      return response.status(400).json({ error: error.message });
-    }
+    return response.json(user);
   },
 );
 
 usersRouter.delete('/:id', async (request, response) => {
-  try {
-    const { id } = request.params;
+  const { id } = request.params;
 
-    const deleteUser = new DeleteUserService();
+  const deleteUser = new DeleteUserService();
 
-    await deleteUser.execute({ id });
+  await deleteUser.execute({ id });
 
-    return response.status(204).send();
-  } catch (error) {
-    return response.status(400).json({ error: error.message });
-  }
+  return response.status(204).send();
 });
 
 export default usersRouter;

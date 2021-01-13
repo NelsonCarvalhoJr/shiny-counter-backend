@@ -6,6 +6,8 @@ import uploadCOnfig from '../config/upload';
 
 import User from '../models/User';
 
+import AppError from '../errors/AppError';
+
 interface IRequest {
   user_id: string;
   avatarFilename: string;
@@ -18,7 +20,7 @@ class UpdateAvatarService {
     const user = await usersRepository.findOne(user_id);
 
     if (!user) {
-      throw new Error('Invalid User ID');
+      throw new AppError("This user ID doesn't exists", 404);
     }
 
     if (user.avatar) {
