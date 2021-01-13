@@ -2,6 +2,8 @@ import { getRepository } from 'typeorm';
 
 import Method from '../models/Method';
 
+import AppError from '../errors/AppError';
+
 interface IRequest {
   id: string;
   name: string;
@@ -14,7 +16,7 @@ class UpdateMethodService {
     const method = await methodsRepository.findOne(id);
 
     if (!method) {
-      throw Error("This method ID doesn't exists");
+      throw new AppError("This method ID doesn't exists", 404);
     }
 
     const findByName = await methodsRepository
@@ -23,7 +25,7 @@ class UpdateMethodService {
       .getOne();
 
     if (findByName && findByName.id !== id) {
-      throw Error('This method already exists');
+      throw new AppError('This method already exists');
     }
 
     method.name = name;

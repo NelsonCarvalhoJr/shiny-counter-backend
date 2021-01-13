@@ -2,6 +2,8 @@ import { getRepository } from 'typeorm';
 
 import Location from '../models/Location';
 
+import AppError from '../errors/AppError';
+
 interface IRequest {
   id: string;
   name: string;
@@ -14,7 +16,7 @@ class UpdateLocationService {
     const location = await locationsRepository.findOne(id);
 
     if (!location) {
-      throw Error("This location ID doesn't exists");
+      throw new AppError("This location ID doesn't exists", 404);
     }
 
     const findByName = await locationsRepository
@@ -23,7 +25,7 @@ class UpdateLocationService {
       .getOne();
 
     if (findByName && findByName.id !== id) {
-      throw Error('This location already exists');
+      throw new AppError('This location already exists');
     }
 
     location.name = name;

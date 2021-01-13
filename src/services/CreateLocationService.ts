@@ -2,6 +2,8 @@ import { getRepository } from 'typeorm';
 
 import Location from '../models/Location';
 
+import AppError from '../errors/AppError';
+
 interface IRequest {
   name: string;
 }
@@ -16,7 +18,7 @@ class CreateLocationService {
       .getOne();
 
     if (findByName) {
-      throw Error('This location already exists');
+      throw new AppError('This location already exists');
     }
 
     const location = locationsRepository.create({ name });

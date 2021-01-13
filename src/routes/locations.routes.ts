@@ -20,47 +20,35 @@ locationsRouter.get('/', async (request, response) => {
 });
 
 locationsRouter.post('/', async (request, response) => {
-  try {
-    const { name } = request.body;
+  const { name } = request.body;
 
-    const createLocation = new CreateLocationService();
+  const createLocation = new CreateLocationService();
 
-    const location = await createLocation.execute({ name });
+  const location = await createLocation.execute({ name });
 
-    return response.json(location);
-  } catch (error) {
-    return response.status(400).json({ error: error.message });
-  }
+  return response.json(location);
 });
 
 locationsRouter.put('/:id', async (request, response) => {
-  try {
-    const { id } = request.params;
+  const { id } = request.params;
 
-    const { name } = request.body;
+  const { name } = request.body;
 
-    const updateLocation = new UpdateLocationService();
+  const updateLocation = new UpdateLocationService();
 
-    const location = await updateLocation.execute({ id, name });
+  const location = await updateLocation.execute({ id, name });
 
-    return response.json(location);
-  } catch (error) {
-    return response.status(400).json({ error: error.message });
-  }
+  return response.json(location);
 });
 
 locationsRouter.delete('/:id', async (request, response) => {
-  try {
-    const { id } = request.params;
+  const { id } = request.params;
 
-    const deleteLocation = new DeleteLocationService();
+  const deleteLocation = new DeleteLocationService();
 
-    await deleteLocation.execute({ id });
+  await deleteLocation.execute({ id });
 
-    return response.status(204).send();
-  } catch (error) {
-    return response.status(400).json({ error: error.message });
-  }
+  return response.status(204).send();
 });
 
 export default locationsRouter;

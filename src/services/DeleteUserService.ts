@@ -2,6 +2,8 @@ import { getRepository } from 'typeorm';
 
 import User from '../models/User';
 
+import AppError from '../errors/AppError';
+
 interface IRequest {
   id: string;
 }
@@ -13,7 +15,7 @@ class DeleteUserService {
     const user = await usersRepository.findOne(id);
 
     if (!user) {
-      throw Error("This user ID doesn't exists");
+      throw new AppError("This user ID doesn't exists", 404);
     }
 
     await usersRepository.delete(id);

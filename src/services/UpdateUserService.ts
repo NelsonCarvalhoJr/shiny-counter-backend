@@ -3,6 +3,8 @@ import { compare, hash } from 'bcryptjs';
 
 import User from '../models/User';
 
+import AppError from '../errors/AppError';
+
 interface IRequest {
   id: string;
   name: string;
@@ -24,7 +26,7 @@ class UpdateUserService {
     const user = await usersRepository.findOne(id);
 
     if (!user) {
-      throw Error("This user ID doesn't exists");
+      throw new AppError("This user ID doesn't exists", 404);
     }
 
     const findByEmail = await usersRepository
@@ -33,7 +35,7 @@ class UpdateUserService {
       .getOne();
 
     if (findByEmail && findByEmail.id !== id) {
-      throw Error('This email already used');
+      throw new AppError('This email already used');
     }
 
     user.name = name;
@@ -46,7 +48,7 @@ class UpdateUserService {
       );
 
       if (!comparePassword) {
-        throw Error('Invalid old password');
+        throw new AppError('Invalid old password');
       }
 
       const hashedPassword = await hash(password, 8);

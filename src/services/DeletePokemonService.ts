@@ -2,6 +2,8 @@ import { getRepository } from 'typeorm';
 
 import Pokemon from '../models/Pokemon';
 
+import AppError from '../errors/AppError';
+
 interface IRequest {
   id: string;
 }
@@ -13,7 +15,7 @@ class DeletePokemonService {
     const pokemon = await pokemonsRepository.findOne(id);
 
     if (!pokemon) {
-      throw Error("This pokémon ID doesn't exists");
+      throw new AppError("This pokémon ID doesn't exists", 404);
     }
 
     await pokemonsRepository.delete(id);

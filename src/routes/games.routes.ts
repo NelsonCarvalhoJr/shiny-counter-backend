@@ -26,83 +26,63 @@ gamesRouter.get('/', async (request, response) => {
 });
 
 gamesRouter.post('/', async (request, response) => {
-  try {
-    const { name, method_id, generation_number } = request.body;
+  const { name, method_id, generation_number } = request.body;
 
-    const createGame = new CreateGameService();
+  const createGame = new CreateGameService();
 
-    const game = await createGame.execute({
-      name,
-      method_id,
-      generation_number,
-    });
+  const game = await createGame.execute({
+    name,
+    method_id,
+    generation_number,
+  });
 
-    return response.json(game);
-  } catch (error) {
-    return response.status(400).json({ error: error.message });
-  }
+  return response.json(game);
 });
 
 gamesRouter.put('/:id', async (request, response) => {
-  try {
-    const { id } = request.params;
+  const { id } = request.params;
 
-    const { name, generation_number } = request.body;
+  const { name, generation_number } = request.body;
 
-    const updateGame = new UpdateGameService();
+  const updateGame = new UpdateGameService();
 
-    const game = await updateGame.execute({ id, name, generation_number });
+  const game = await updateGame.execute({ id, name, generation_number });
 
-    return response.json(game);
-  } catch (error) {
-    return response.status(400).json({ error: error.message });
-  }
+  return response.json(game);
 });
 
 gamesRouter.delete('/:id', async (request, response) => {
-  try {
-    const { id } = request.params;
+  const { id } = request.params;
 
-    const deleteGame = new DeleteGameService();
+  const deleteGame = new DeleteGameService();
 
-    await deleteGame.execute({ id });
+  await deleteGame.execute({ id });
 
-    return response.status(204).send();
-  } catch (error) {
-    return response.status(400).json({ error: error.message });
-  }
+  return response.status(204).send();
 });
 
 gamesRouter.post('/:id/add', async (request, response) => {
-  try {
-    const { id } = request.params;
+  const { id } = request.params;
 
-    const { method_id } = request.body;
+  const { method_id } = request.body;
 
-    const addMethods = new AddMethodsService();
+  const addMethods = new AddMethodsService();
 
-    const game = await addMethods.execute({ id, method_id });
+  const game = await addMethods.execute({ id, method_id });
 
-    return response.json(game);
-  } catch (error) {
-    return response.status(400).json({ error: error.message });
-  }
+  return response.json(game);
 });
 
 gamesRouter.post('/:id/remove', async (request, response) => {
-  try {
-    const { id } = request.params;
+  const { id } = request.params;
 
-    const { method_id } = request.body;
+  const { method_id } = request.body;
 
-    const removeMethods = new RemoveMethodsService();
+  const removeMethods = new RemoveMethodsService();
 
-    const game = await removeMethods.execute({ id, method_id });
+  const game = await removeMethods.execute({ id, method_id });
 
-    return response.json(game);
-  } catch (error) {
-    return response.status(400).json({ error: error.message });
-  }
+  return response.json(game);
 });
 
 export default gamesRouter;

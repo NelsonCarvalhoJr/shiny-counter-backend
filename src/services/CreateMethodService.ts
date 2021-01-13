@@ -2,6 +2,8 @@ import { getRepository } from 'typeorm';
 
 import Method from '../models/Method';
 
+import AppError from '../errors/AppError';
+
 interface IRequest {
   name: string;
 }
@@ -16,7 +18,7 @@ class CreateMethodService {
       .getOne();
 
     if (findByName) {
-      throw Error('This method already exists');
+      throw new AppError('This method already exists');
     }
 
     const method = createMethodService.create({ name });
