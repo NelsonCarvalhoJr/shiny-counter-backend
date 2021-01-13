@@ -7,13 +7,13 @@ Back-end do App de Contador para Shiny Hunters. Projeto em fase inicial de desen
 | Entidades | Atributos |
 | ----------- | ----------- |
 | pokemon | id, name, pokedex_number |
-| form | id, name, image_url, shiny_image_url, pokemon_id |
+| form | id, name, image, shiny_image, pokemon_id |
 | game | id, name, generation_number |
 | method | id, name |
 | games_methods | id, game_id, method_id | 
 | route | id, name |
 | route_and_form_in_methods | id, route_id, form_id, method_id |
-| user | id, name, email, password |
+| user | id, name, email, password, avatar |
 | hunt | id, has_shiny_charm, is_open, got_shiny, user_id |
 | counter | id, value, hunt_id, form_id |
 
@@ -40,3 +40,7 @@ Após clonar o projeto, é necessário atualizar as dependências.
 yarn
 yarn dev:server
 ```
+
+### Configurações adicionais
+
+- Variáveis ambiente: criar arquivo .env com o conteúdo de .env.example, para utilizar as variáveis ambientes do sistema, preenchendo todos os valores necessários
