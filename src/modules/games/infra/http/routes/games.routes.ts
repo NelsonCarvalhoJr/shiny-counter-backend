@@ -1,6 +1,9 @@
 import Router from 'express';
 
-import ListGamesService from '@modules/games/services/ListGamesService';
+import GamesRepository from '@modules/games/infra/typeorm/repositories/GamesRepository';
+import GamesMethodsRepository from '@modules/games/infra/typeorm/repositories/GamesMethodsRepository';
+import MethodsRepository from '@modules/methods/infra/typeorm/repositories/MethodsRepository';
+
 import CreateGameService from '@modules/games/services/CreateGameService';
 import UpdateGameService from '@modules/games/services/UpdateGameService';
 import DeleteGameService from '@modules/games/services/DeleteGameService';
@@ -15,11 +18,12 @@ gamesRouter.get('/', async (request, response) => {
   const parsedName = name as string;
   const parsedGenerationNumber = Number(generation_number);
 
-  const listGames = new ListGamesService();
+  const gamesRepository = new GamesRepository();
 
-  const games = await listGames.execute({
+  const games = await gamesRepository.all({
     name: parsedName,
     generation_number: parsedGenerationNumber,
+    order: { generation_number: 'ASC' },
   });
 
   return response.json(games);
@@ -28,7 +32,9 @@ gamesRouter.get('/', async (request, response) => {
 gamesRouter.post('/', async (request, response) => {
   const { name, method_id, generation_number } = request.body;
 
-  const createGame = new CreateGameService();
+  const gamesRepository = new GamesRepository();
+  const methodsRepository = new MethodsRepository();
+  const createGame = new CreateGameService(gamesRepository, methodsRepository);
 
   const game = await createGame.execute({
     name,
@@ -44,7 +50,8 @@ gamesRouter.put('/:id', async (request, response) => {
 
   const { name, generation_number } = request.body;
 
-  const updateGame = new UpdateGameService();
+  const gamesRepository = new GamesRepository();
+  const updateGame = new UpdateGameService(gamesRepository);
 
   const game = await updateGame.execute({ id, name, generation_number });
 
@@ -54,33 +61,50 @@ gamesRouter.put('/:id', async (request, response) => {
 gamesRouter.delete('/:id', async (request, response) => {
   const { id } = request.params;
 
-  const deleteGame = new DeleteGameService();
+  const gamesRepository = new GamesRepository();
+  const deleteGame = new DeleteGameService(gamesRepository);
 
   await deleteGame.execute({ id });
 
   return response.status(204).send();
 });
 
-gamesRouter.post('/:id/add', async (request, response) => {
-  const { id } = request.params;
+gamesRouter.post('/:game_id/add', async (request, response) => {
+  const { game_id } = request.params;
 
   const { method_id } = request.body;
 
-  const addMethods = new AddMethodsService();
+  const gamesRepository = new GamesRepository();
+  const methodsRepository = new MethodsRepository();
+  const gamesMethodsRepository = new GamesMethodsRepository();
 
-  const game = await addMethods.execute({ id, method_id });
+  const addMethods = new AddMethodsService(
+    gamesRepository,
+    methodsRepository,
+    gamesMethodsRepository,
+  );
+
+  const game = await addMethods.execute({ game_id, method_id });
 
   return response.json(game);
 });
 
-gamesRouter.post('/:id/remove', async (request, response) => {
-  const { id } = request.params;
+gamesRouter.post('/:game_id/remove', async (request, response) => {
+  const { game_id } = request.params;
 
   const { method_id } = request.body;
 
-  const removeMethods = new RemoveMethodsService();
+  const gamesRepository = new GamesRepository();
+  const methodsRepository = new MethodsRepository();
+  const gamesMethodsRepository = new GamesMethodsRepository();
 
-  const game = await removeMethods.execute({ id, method_id });
+  const removeMethods = new RemoveMethodsService(
+    gamesRepository,
+    methodsRepository,
+    gamesMethodsRepository,
+  );
+
+  const game = await removeMethods.execute({ game_id, method_id });
 
   return response.json(game);
 });

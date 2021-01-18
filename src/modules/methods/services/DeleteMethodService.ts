@@ -1,24 +1,22 @@
-import { getRepository } from 'typeorm';
-
 import AppError from '@shared/errors/AppError';
 
-import Method from '../infra/typeorm/entities/Method';
+import IMethodsRepository from '../repositories/IMethodsRepository';
 
 interface IRequest {
   id: string;
 }
 
 class DeleteMethodService {
-  public async execute({ id }: IRequest): Promise<void> {
-    const methodsRepository = getRepository(Method);
+  constructor(private methodsRepository: IMethodsRepository) {}
 
-    const method = await methodsRepository.findOne(id);
+  public async execute({ id }: IRequest): Promise<void> {
+    const method = await this.methodsRepository.findById(id);
 
     if (!method) {
       throw new AppError("This method ID doesn't exists", 404);
     }
 
-    await methodsRepository.delete(id);
+    await this.methodsRepository.delete(id);
   }
 }
 

@@ -1,6 +1,7 @@
 import Router from 'express';
 
-import ListMethodsService from '@modules/methods/services/ListMethodsService';
+import MethodsRepository from '@modules/methods/infra/typeorm/repositories/MethodsRepository';
+
 import CreateMethodService from '@modules/methods/services/CreateMethodService';
 import UpdateMethodService from '@modules/methods/services/UpdateMethodService';
 import DeleteMethodService from '@modules/methods/services/DeleteMethodService';
@@ -8,16 +9,33 @@ import DeleteMethodService from '@modules/methods/services/DeleteMethodService';
 const methodsRouter = Router();
 
 methodsRouter.get('/', async (request, response) => {
-  const { name, game_id } = request.query;
+  const { name } = request.query;
 
   const parsedName = name as string;
-  const parsedGameId = game_id as string;
 
-  const listMethod = new ListMethodsService();
+  const methodsRepository = new MethodsRepository();
 
-  const methods = await listMethod.execute({
+  const methods = await methodsRepository.all({
     name: parsedName,
-    game_id: parsedGameId,
+    order: {
+      name: 'ASC',
+    },
+  });
+
+  return response.json(methods);
+});
+
+methodsRouter.get('/:game_id', async (request, response) => {
+  const { game_id } = request.params;
+  const { name } = request.query;
+
+  const parsedName = name as string;
+
+  const methodsRepository = new MethodsRepository();
+
+  const methods = await methodsRepository.allByGameId({
+    name: parsedName,
+    game_id,
   });
 
   return response.json(methods);
@@ -26,7 +44,8 @@ methodsRouter.get('/', async (request, response) => {
 methodsRouter.post('/', async (request, response) => {
   const { name } = request.body;
 
-  const createMethod = new CreateMethodService();
+  const methodsRepository = new MethodsRepository();
+  const createMethod = new CreateMethodService(methodsRepository);
 
   const method = await createMethod.execute({ name });
 
@@ -38,7 +57,8 @@ methodsRouter.put('/:id', async (request, response) => {
 
   const { name } = request.body;
 
-  const updateMethod = new UpdateMethodService();
+  const methodsRepository = new MethodsRepository();
+  const updateMethod = new UpdateMethodService(methodsRepository);
 
   const method = await updateMethod.execute({ id, name });
 
@@ -48,7 +68,8 @@ methodsRouter.put('/:id', async (request, response) => {
 methodsRouter.delete('/:id', async (request, response) => {
   const { id } = request.params;
 
-  const deleteMethod = new DeleteMethodService();
+  const methodsRepository = new MethodsRepository();
+  const deleteMethod = new DeleteMethodService(methodsRepository);
 
   await deleteMethod.execute({ id });
 

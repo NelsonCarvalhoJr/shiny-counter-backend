@@ -1,4 +1,3 @@
-import { getRepository } from 'typeorm';
 import path from 'path';
 import fs from 'fs';
 
@@ -6,6 +5,7 @@ import uploadConfig from '@config/upload';
 
 import AppError from '@shared/errors/AppError';
 
+import IUsersRepository from '../repositories/IUsersRepository';
 import User from '../infra/typeorm/entities/User';
 
 interface IRequest {
@@ -14,10 +14,10 @@ interface IRequest {
 }
 
 class UpdateAvatarService {
-  public async execute({ user_id, avatarFilename }: IRequest): Promise<User> {
-    const usersRepository = await getRepository(User);
+  constructor(private usersRepository: IUsersRepository) {}
 
-    const user = await usersRepository.findOne(user_id);
+  public async execute({ user_id, avatarFilename }: IRequest): Promise<User> {
+    const user = await this.usersRepository.findById(user_id);
 
     if (!user) {
       throw new AppError("This user ID doesn't exists", 404);
@@ -25,16 +25,21 @@ class UpdateAvatarService {
 
     if (user.avatar) {
       const userAvatarFilePath = path.join(uploadConfig.directory, user.avatar);
-      const userAvatarFileExists = await fs.promises.stat(userAvatarFilePath);
 
-      if (userAvatarFileExists) {
-        await fs.promises.unlink(userAvatarFilePath);
+      try {
+        const userAvatarFileExists = await fs.promises.stat(userAvatarFilePath);
+
+        if (userAvatarFileExists) {
+          await fs.promises.unlink(userAvatarFilePath);
+        }
+      } catch (err) {
+        console.error(err);
       }
     }
 
     user.avatar = avatarFilename;
 
-    await usersRepository.save(user);
+    await this.usersRepository.update(user);
 
     return user;
   }

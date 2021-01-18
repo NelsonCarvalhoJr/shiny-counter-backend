@@ -1,8 +1,8 @@
-import { getRepository } from 'typeorm';
 import { compare, hash } from 'bcryptjs';
 
 import AppError from '@shared/errors/AppError';
 
+import IUsersRepository from '../repositories/IUsersRepository';
 import User from '../infra/typeorm/entities/User';
 
 interface IRequest {
@@ -14,6 +14,8 @@ interface IRequest {
 }
 
 class UpdateUserService {
+  constructor(private usersRepository: IUsersRepository) {}
+
   public async execute({
     id,
     name,
@@ -21,18 +23,13 @@ class UpdateUserService {
     old_password,
     password,
   }: IRequest): Promise<User> {
-    const usersRepository = getRepository(User);
-
-    const user = await usersRepository.findOne(id);
+    const user = await this.usersRepository.findById(id);
 
     if (!user) {
       throw new AppError("This user ID doesn't exists", 404);
     }
 
-    const findByEmail = await usersRepository
-      .createQueryBuilder()
-      .where('LOWER(email) = LOWER(:email)', { email })
-      .getOne();
+    const findByEmail = await this.usersRepository.findByEmail(email);
 
     if (findByEmail && findByEmail.id !== id) {
       throw new AppError('This email already used');
@@ -56,7 +53,7 @@ class UpdateUserService {
       user.password = hashedPassword;
     }
 
-    await usersRepository.save(user);
+    await this.usersRepository.update(user);
 
     return user;
   }

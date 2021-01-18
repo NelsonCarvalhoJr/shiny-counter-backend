@@ -1,29 +1,31 @@
-import { getRepository, In } from 'typeorm';
-
 import AppError from '@shared/errors/AppError';
 
-import Method from '@modules/methods/infra/typeorm/entities/Method';
+import IMethodsRepository from '@modules/methods/repositories/IMethodsRepository';
+import IGamesRepository from '../repositories/IGamesRepository';
+import IGamesMethodsRepository from '../repositories/IGamesMethodsRepository';
+
 import Game from '../infra/typeorm/entities/Game';
-import GamesMethods from '../infra/typeorm/entities/GamesMethods';
 
 interface IRequest {
-  id: string;
+  game_id: string;
   method_id: string[];
 }
 
 class RemoveMethodsService {
-  public async execute({ id, method_id }: IRequest): Promise<Game> {
-    const gamesRepository = getRepository(Game);
-    const methodsRepositorty = getRepository(Method);
-    const gamesMethodsRepository = getRepository(GamesMethods);
+  constructor(
+    private gamesRepository: IGamesRepository,
+    private methodsRepositorty: IMethodsRepository,
+    private gamesMethodsRepository: IGamesMethodsRepository,
+  ) {}
 
-    let game = await gamesRepository.findOne(id);
+  public async execute({ game_id, method_id }: IRequest): Promise<Game> {
+    const game = await this.gamesRepository.findById(game_id);
 
     if (!game) {
       throw new AppError("This game ID doesn't exists", 404);
     }
 
-    const methods = await methodsRepositorty.findByIds(method_id);
+    const methods = await this.methodsRepositorty.findByIds(method_id);
 
     if (methods.length < method_id.length) {
       const methodIdsFound = methods.map(method => method.id);
@@ -42,11 +44,9 @@ class RemoveMethodsService {
       );
     }
 
-    const methodsInGame = await gamesMethodsRepository.find({
-      where: {
-        method_id: In(method_id),
-        game_id: id,
-      },
+    const methodsInGame = await this.gamesMethodsRepository.all({
+      method_id,
+      game_id,
     });
 
     if (methodsInGame.length < method_id.length) {
@@ -67,14 +67,20 @@ class RemoveMethodsService {
     }
 
     const gamesMethods = methodsInGame.map(game_method => {
-      return gamesMethodsRepository.delete(game_method.id);
+      return this.gamesMethodsRepository.delete(game_method.id);
     });
 
     await Promise.all(gamesMethods);
 
-    game = await gamesRepository.findOne(id);
+    game.game_methods = game.game_methods.filter(game_method => {
+      return (
+        method_id.findIndex(
+          methodDeleted => methodDeleted === game_method.id,
+        ) >= 0
+      );
+    });
 
-    return game as Game;
+    return game;
   }
 }
 

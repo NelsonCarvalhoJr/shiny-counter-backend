@@ -46,7 +46,9 @@
         "prefix": ["I"],
         "format": ["PascalCase"]
       }
-    ]
+    ],
+    "no-useless-constructor": "off",
+    "no-console": "off"
   },
   "settings": {
     "import/resolver": {

@@ -1,8 +1,7 @@
-import { getRepository, In } from 'typeorm';
-
 import AppError from '@shared/errors/AppError';
 
-import Method from '@modules/methods/infra/typeorm/entities/Method';
+import IMethodsRepository from '@modules/methods/repositories/IMethodsRepository';
+import IGamesRepository from '../repositories/IGamesRepository';
 import Game from '../infra/typeorm/entities/Game';
 
 interface IRequest {
@@ -12,28 +11,23 @@ interface IRequest {
 }
 
 class CreateGameService {
+  constructor(
+    private gamesRepository: IGamesRepository,
+    private methodsRepository: IMethodsRepository,
+  ) {}
+
   public async execute({
     name,
     generation_number,
     method_id = [],
   }: IRequest): Promise<Game> {
-    const gamesRepository = getRepository(Game);
-    const methodsRepository = getRepository(Method);
-
-    const findByName = await gamesRepository
-      .createQueryBuilder()
-      .where('LOWER(name) = LOWER(:name)', { name })
-      .getOne();
+    const findByName = await this.gamesRepository.findByName(name);
 
     if (findByName) {
       throw new AppError('This game already exists');
     }
 
-    const findMethods = await methodsRepository.find({
-      where: {
-        id: In(method_id),
-      },
-    });
+    const findMethods = await this.methodsRepository.findByIds(method_id);
 
     if (findMethods.length < method_id.length) {
       const methodIdsFound = findMethods.map(method => method.id);
@@ -58,13 +52,11 @@ class CreateGameService {
       };
     });
 
-    const game = gamesRepository.create({
+    const game = await this.gamesRepository.create({
       name,
       game_methods,
       generation_number,
     });
-
-    await gamesRepository.save(game);
 
     return game;
   }

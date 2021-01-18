@@ -1,24 +1,22 @@
-import { getRepository } from 'typeorm';
-
 import AppError from '@shared/errors/AppError';
 
-import Location from '../infra/typeorm/entities/Location';
+import ILocationsRepository from '../repositories/ILocationsRepository';
 
 interface IRequest {
   id: string;
 }
 
 class DeletePokemonService {
-  public async execute({ id }: IRequest): Promise<void> {
-    const locationsRepository = getRepository(Location);
+  constructor(private locationsRepository: ILocationsRepository) {}
 
-    const location = await locationsRepository.findOne(id);
+  public async execute({ id }: IRequest): Promise<void> {
+    const location = await this.locationsRepository.findById(id);
 
     if (!location) {
       throw new AppError("This location ID doesn't exists", 404);
     }
 
-    await locationsRepository.delete(id);
+    await this.locationsRepository.delete(id);
   }
 }
 

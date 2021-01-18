@@ -1,7 +1,6 @@
-import { getRepository } from 'typeorm';
-
 import AppError from '@shared/errors/AppError';
 
+import IMethodsRepository from '../repositories/IMethodsRepository';
 import Method from '../infra/typeorm/entities/Method';
 
 interface IRequest {
@@ -9,21 +8,16 @@ interface IRequest {
 }
 
 class CreateMethodService {
-  public async execute({ name }: IRequest): Promise<Method> {
-    const createMethodService = getRepository(Method);
+  constructor(private methodsRepository: IMethodsRepository) {}
 
-    const findByName = await createMethodService
-      .createQueryBuilder()
-      .where('LOWER(name) = LOWER(:name)', { name })
-      .getOne();
+  public async execute({ name }: IRequest): Promise<Method> {
+    const findByName = await this.methodsRepository.findByName(name);
 
     if (findByName) {
       throw new AppError('This method already exists');
     }
 
-    const method = createMethodService.create({ name });
-
-    await createMethodService.save(method);
+    const method = await this.methodsRepository.create({ name });
 
     return method;
   }

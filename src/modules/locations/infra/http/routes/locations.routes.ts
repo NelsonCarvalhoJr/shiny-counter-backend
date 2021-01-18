@@ -1,6 +1,7 @@
 import Router from 'express';
 
-import ListLocationsService from '@modules/locations/services/ListLocationsService';
+import LocationsRepository from '@modules/locations/infra/typeorm/repositories/LocationsRepository';
+
 import CreateLocationService from '@modules/locations/services/CreateLocationService';
 import UpdateLocationService from '@modules/locations/services/UpdateLocationService';
 import DeleteLocationService from '@modules/locations/services/DeleteLocationService';
@@ -12,9 +13,12 @@ locationsRouter.get('/', async (request, response) => {
 
   const parsedName = name as string;
 
-  const listLocations = new ListLocationsService();
+  const locationsRepository = new LocationsRepository();
 
-  const location = await listLocations.execute({ name: parsedName });
+  const location = await locationsRepository.all({
+    name: parsedName,
+    order: { name: 'ASC' },
+  });
 
   return response.json(location);
 });
@@ -22,7 +26,8 @@ locationsRouter.get('/', async (request, response) => {
 locationsRouter.post('/', async (request, response) => {
   const { name } = request.body;
 
-  const createLocation = new CreateLocationService();
+  const locationsRepository = new LocationsRepository();
+  const createLocation = new CreateLocationService(locationsRepository);
 
   const location = await createLocation.execute({ name });
 
@@ -34,7 +39,8 @@ locationsRouter.put('/:id', async (request, response) => {
 
   const { name } = request.body;
 
-  const updateLocation = new UpdateLocationService();
+  const locationsRepository = new LocationsRepository();
+  const updateLocation = new UpdateLocationService(locationsRepository);
 
   const location = await updateLocation.execute({ id, name });
 
@@ -44,7 +50,8 @@ locationsRouter.put('/:id', async (request, response) => {
 locationsRouter.delete('/:id', async (request, response) => {
   const { id } = request.params;
 
-  const deleteLocation = new DeleteLocationService();
+  const locationsRepository = new LocationsRepository();
+  const deleteLocation = new DeleteLocationService(locationsRepository);
 
   await deleteLocation.execute({ id });
 

@@ -3,7 +3,8 @@ import multer from 'multer';
 
 import uploadConfig from '@config/upload';
 
-import ListUsersService from '@modules/users/services/ListUsersService';
+import UsersRepository from '@modules/users/infra/typeorm/repositories/UsersRepository';
+
 import CreateUserService from '@modules/users/services/CreateUserService';
 import UpdateUserService from '@modules/users/services/UpdateUserService';
 import DeleteUserService from '@modules/users/services/DeleteUserService';
@@ -20,7 +21,8 @@ usersRouter.put('/profile', ensureAuthenticated, async (request, response) => {
 
   const { name, email, password, old_password } = request.body;
 
-  const updateUser = new UpdateUserService();
+  const usersRepository = new UsersRepository();
+  const updateUser = new UpdateUserService(usersRepository);
 
   const user = await updateUser.execute({
     id,
@@ -39,7 +41,8 @@ usersRouter.patch(
   ensureAuthenticated,
   upload.single('avatar'),
   async (request, response) => {
-    const updateAvatar = new UpdateAvatarService();
+    const usersRepository = new UsersRepository();
+    const updateAvatar = new UpdateAvatarService(usersRepository);
 
     const user = await updateAvatar.execute({
       user_id: request.user.id,
@@ -59,11 +62,14 @@ usersRouter.get('/', async (request, response) => {
   const parsedName = name as string;
   const parsedEmail = email as string;
 
-  const listUsers = new ListUsersService();
+  const usersRepository = new UsersRepository();
 
-  const users = await listUsers.execute({
+  const users = await usersRepository.all({
     name: parsedName,
     email: parsedEmail,
+    order: {
+      name: 'ASC',
+    },
   });
 
   return response.json(users);
@@ -72,7 +78,8 @@ usersRouter.get('/', async (request, response) => {
 usersRouter.post('/', async (request, response) => {
   const { name, email, password } = request.body;
 
-  const createUser = new CreateUserService();
+  const usersRepository = new UsersRepository();
+  const createUser = new CreateUserService(usersRepository);
 
   const user = await createUser.execute({ name, email, password });
 
@@ -86,7 +93,8 @@ usersRouter.put('/:id', async (request, response) => {
 
   const { name, email, password, old_password } = request.body;
 
-  const updateUser = new UpdateUserService();
+  const usersRepository = new UsersRepository();
+  const updateUser = new UpdateUserService(usersRepository);
 
   const user = await updateUser.execute({
     id,
@@ -105,7 +113,8 @@ usersRouter.patch(
   '/avatar/:id',
   upload.single('avatar'),
   async (request, response) => {
-    const updateAvatar = new UpdateAvatarService();
+    const usersRepository = new UsersRepository();
+    const updateAvatar = new UpdateAvatarService(usersRepository);
 
     const user = await updateAvatar.execute({
       user_id: request.params.id,
@@ -121,7 +130,8 @@ usersRouter.patch(
 usersRouter.delete('/:id', async (request, response) => {
   const { id } = request.params;
 
-  const deleteUser = new DeleteUserService();
+  const usersRepository = new UsersRepository();
+  const deleteUser = new DeleteUserService(usersRepository);
 
   await deleteUser.execute({ id });
 

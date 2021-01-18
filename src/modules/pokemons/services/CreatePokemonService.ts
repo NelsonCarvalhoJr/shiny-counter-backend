@@ -1,7 +1,6 @@
-import { getRepository } from 'typeorm';
-
 import AppError from '@shared/errors/AppError';
 
+import IPokemonsRepository from '../repositories/IPokemonsRepository';
 import Pokemon from '../infra/typeorm/entities/Pokemon';
 
 interface IRequest {
@@ -10,31 +9,27 @@ interface IRequest {
 }
 
 class CreatePokemonService {
-  public async execute({ name, pokedex_number }: IRequest): Promise<Pokemon> {
-    const pokemonsRepository = getRepository(Pokemon);
+  constructor(private pokemonsRepository: IPokemonsRepository) {}
 
-    const findByName = await pokemonsRepository
-      .createQueryBuilder()
-      .where('LOWER(name) = LOWER(:name)', { name })
-      .getOne();
+  public async execute({ name, pokedex_number }: IRequest): Promise<Pokemon> {
+    const findByName = await this.pokemonsRepository.findByName(name);
 
     if (findByName) {
       throw new AppError('This pokémon already exists');
     }
 
-    const findByPokedexNumber = await pokemonsRepository.findOne({
-      where: {
-        pokedex_number,
-      },
-    });
+    const findByPokedexNumber = await this.pokemonsRepository.findByPokedexNumber(
+      pokedex_number,
+    );
 
     if (findByPokedexNumber) {
       throw new AppError('This pokédex number already exists');
     }
 
-    const pokemon = pokemonsRepository.create({ name, pokedex_number });
-
-    await pokemonsRepository.save(pokemon);
+    const pokemon = await this.pokemonsRepository.create({
+      name,
+      pokedex_number,
+    });
 
     return pokemon;
   }

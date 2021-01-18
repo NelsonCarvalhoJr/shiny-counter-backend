@@ -1,7 +1,6 @@
-import { getRepository } from 'typeorm';
-
 import AppError from '@shared/errors/AppError';
 
+import IGamesRepository from '../repositories/IGamesRepository';
 import Game from '../infra/typeorm/entities/Game';
 
 interface IRequest {
@@ -11,23 +10,20 @@ interface IRequest {
 }
 
 class UpdateGameService {
+  constructor(private gamesRepository: IGamesRepository) {}
+
   public async execute({
     id,
     name,
     generation_number,
   }: IRequest): Promise<Game> {
-    const gamesRepository = getRepository(Game);
-
-    const game = await gamesRepository.findOne(id);
+    const game = await this.gamesRepository.findById(id);
 
     if (!game) {
       throw new AppError("This game ID doesn't exists", 404);
     }
 
-    const findByName = await gamesRepository
-      .createQueryBuilder()
-      .where('LOWER(name) = LOWER(:name)', { name })
-      .getOne();
+    const findByName = await this.gamesRepository.findByName(name);
 
     if (findByName && findByName.id !== id) {
       throw new AppError('This game already exists');
@@ -36,7 +32,7 @@ class UpdateGameService {
     game.name = name;
     game.generation_number = generation_number;
 
-    await gamesRepository.save(game);
+    await this.gamesRepository.update(game);
 
     return game;
   }

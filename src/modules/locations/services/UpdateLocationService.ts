@@ -1,7 +1,6 @@
-import { getRepository } from 'typeorm';
-
 import AppError from '@shared/errors/AppError';
 
+import ILocationsRepository from '../repositories/ILocationsRepository';
 import Location from '../infra/typeorm/entities/Location';
 
 interface IRequest {
@@ -10,19 +9,16 @@ interface IRequest {
 }
 
 class UpdateLocationService {
-  public async execute({ id, name }: IRequest): Promise<Location> {
-    const locationsRepository = getRepository(Location);
+  constructor(private locationsRepository: ILocationsRepository) {}
 
-    const location = await locationsRepository.findOne(id);
+  public async execute({ id, name }: IRequest): Promise<Location> {
+    const location = await this.locationsRepository.findById(id);
 
     if (!location) {
       throw new AppError("This location ID doesn't exists", 404);
     }
 
-    const findByName = await locationsRepository
-      .createQueryBuilder()
-      .where('LOWER(name) = LOWER(:name)', { name })
-      .getOne();
+    const findByName = await this.locationsRepository.findByName(name);
 
     if (findByName && findByName.id !== id) {
       throw new AppError('This location already exists');
@@ -30,7 +26,7 @@ class UpdateLocationService {
 
     location.name = name;
 
-    await locationsRepository.save(location);
+    await this.locationsRepository.update(location);
 
     return location;
   }

@@ -1,24 +1,22 @@
-import { getRepository } from 'typeorm';
-
 import AppError from '@shared/errors/AppError';
 
-import User from '../infra/typeorm/entities/User';
+import IUsersRepository from '../repositories/IUsersRepository';
 
 interface IRequest {
   id: string;
 }
 
 class DeleteUserService {
-  public async execute({ id }: IRequest): Promise<void> {
-    const usersRepository = getRepository(User);
+  constructor(private usersRepository: IUsersRepository) {}
 
-    const user = await usersRepository.findOne(id);
+  public async execute({ id }: IRequest): Promise<void> {
+    const user = await this.usersRepository.findById(id);
 
     if (!user) {
       throw new AppError("This user ID doesn't exists", 404);
     }
 
-    await usersRepository.delete(id);
+    await this.usersRepository.delete(id);
   }
 }
 

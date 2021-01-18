@@ -1,8 +1,8 @@
-import { getRepository } from 'typeorm';
-
 import AppError from '@shared/errors/AppError';
 
+import IMethodsRepository from '../repositories/IMethodsRepository';
 import Method from '../infra/typeorm/entities/Method';
+import MethodsRepository from '../infra/typeorm/repositories/MethodsRepository';
 
 interface IRequest {
   id: string;
@@ -10,19 +10,16 @@ interface IRequest {
 }
 
 class UpdateMethodService {
-  public async execute({ id, name }: IRequest): Promise<Method> {
-    const methodsRepository = getRepository(Method);
+  constructor(private methodsRepository: MethodsRepository) {}
 
-    const method = await methodsRepository.findOne(id);
+  public async execute({ id, name }: IRequest): Promise<Method> {
+    const method = await this.methodsRepository.findById(id);
 
     if (!method) {
       throw new AppError("This method ID doesn't exists", 404);
     }
 
-    const findByName = await methodsRepository
-      .createQueryBuilder()
-      .where('LOWER(name) = LOWER(:name)', { name })
-      .getOne();
+    const findByName = await this.methodsRepository.findByName(name);
 
     if (findByName && findByName.id !== id) {
       throw new AppError('This method already exists');
@@ -30,7 +27,7 @@ class UpdateMethodService {
 
     method.name = name;
 
-    await methodsRepository.save(method);
+    await this.methodsRepository.update(method);
 
     return method;
   }
