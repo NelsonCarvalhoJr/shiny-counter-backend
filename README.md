@@ -43,4 +43,5 @@ yarn dev:server
 
 ### Configurações adicionais
 
-- Variáveis ambiente: criar arquivo .env com o conteúdo de .env.example, para utilizar as variáveis ambientes do sistema, preenchendo todos os valores necessários
+- Variáveis ambiente: criar arquivo *.env* com o conteúdo de *.env.example*, para utilizar as variáveis ambientes do sistema, preenchendo todos os valores necessários
+- Banco de dados: criar arquivo *ormconfig.json* com o conteúdo de *ormconfig.example.json* e configurar com os dados da conexão com o banco de dados
