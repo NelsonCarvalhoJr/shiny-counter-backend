@@ -1,16 +1,21 @@
+import { injectable, inject } from 'tsyringe';
+
 import AppError from '@shared/errors/AppError';
 
 import IMethodsRepository from '../repositories/IMethodsRepository';
 import Method from '../infra/typeorm/entities/Method';
-import MethodsRepository from '../infra/typeorm/repositories/MethodsRepository';
 
 interface IRequest {
   id: string;
   name: string;
 }
 
+@injectable()
 class UpdateMethodService {
-  constructor(private methodsRepository: MethodsRepository) {}
+  constructor(
+    @inject('MethodsRepository')
+    private methodsRepository: IMethodsRepository,
+  ) {}
 
   public async execute({ id, name }: IRequest): Promise<Method> {
     const method = await this.methodsRepository.findById(id);

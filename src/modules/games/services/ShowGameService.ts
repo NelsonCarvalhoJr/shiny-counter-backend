@@ -4,26 +4,28 @@ import AppError from '@shared/errors/AppError';
 
 import IGamesRepository from '../repositories/IGamesRepository';
 
+import Game from '../infra/typeorm/entities/Game';
+
 interface IRequest {
   id: string;
 }
 
 @injectable()
-class DeleteGameService {
+class ShowGameService {
   constructor(
     @inject('GamesRepository')
     private gamesRepository: IGamesRepository,
   ) {}
 
-  public async execute({ id }: IRequest): Promise<void> {
+  public async execute({ id }: IRequest): Promise<Game> {
     const game = await this.gamesRepository.findById(id);
 
     if (!game) {
-      throw new AppError("This game ID doesn't exists", 404);
+      throw new AppError('Game not found', 404);
     }
 
-    await this.gamesRepository.delete(id);
+    return game;
   }
 }
 
-export default DeleteGameService;
+export default ShowGameService;

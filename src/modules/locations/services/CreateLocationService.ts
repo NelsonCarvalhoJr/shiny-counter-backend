@@ -1,3 +1,5 @@
+import { injectable, inject } from 'tsyringe';
+
 import AppError from '@shared/errors/AppError';
 
 import ILocationsRepository from '../repositories/ILocationsRepository';
@@ -7,8 +9,12 @@ interface IRequest {
   name: string;
 }
 
+@injectable()
 class CreateLocationService {
-  constructor(private locationsRepository: ILocationsRepository) {}
+  constructor(
+    @inject('LocationsRepository')
+    private locationsRepository: ILocationsRepository,
+  ) {}
 
   public async execute({ name }: IRequest): Promise<Location> {
     const findByName = await this.locationsRepository.findByName(name);

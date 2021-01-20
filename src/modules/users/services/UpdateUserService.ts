@@ -1,3 +1,4 @@
+import { injectable, inject } from 'tsyringe';
 import { compare, hash } from 'bcryptjs';
 
 import AppError from '@shared/errors/AppError';
@@ -13,8 +14,12 @@ interface IRequest {
   password: string;
 }
 
+@injectable()
 class UpdateUserService {
-  constructor(private usersRepository: IUsersRepository) {}
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: IUsersRepository,
+  ) {}
 
   public async execute({
     id,
