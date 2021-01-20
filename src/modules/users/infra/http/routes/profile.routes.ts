@@ -3,6 +3,8 @@ import multer from 'multer';
 
 import uploadConfig from '@config/upload';
 
+import ensureAuthenticated from '@modules/users/infra/http/middlewares/ensureAuthenticated';
+
 import UsersController from '../controllers/UsersController';
 import UserAvatarController from '../controllers/UserAvatarController';
 
@@ -12,13 +14,12 @@ const upload = multer(uploadConfig);
 const usersController = new UsersController();
 const userAvatarController = new UserAvatarController();
 
-usersRouter.get('/', usersController.index);
-usersRouter.get('/:id', usersController.show);
-usersRouter.post('/', usersController.create);
-usersRouter.put('/:id', usersController.update);
-usersRouter.delete('/:id', usersController.delete);
+usersRouter.get('/', ensureAuthenticated, usersController.show);
+usersRouter.put('/', ensureAuthenticated, usersController.update);
+usersRouter.delete('/', ensureAuthenticated, usersController.delete);
 usersRouter.patch(
-  '/avatar/:id',
+  '/avatar',
+  ensureAuthenticated,
   upload.single('avatar'),
   userAvatarController.update,
 );

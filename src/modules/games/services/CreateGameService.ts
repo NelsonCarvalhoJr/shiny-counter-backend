@@ -1,3 +1,5 @@
+import { injectable, inject } from 'tsyringe';
+
 import AppError from '@shared/errors/AppError';
 
 import IMethodsRepository from '@modules/methods/repositories/IMethodsRepository';
@@ -10,9 +12,12 @@ interface IRequest {
   method_id: string[];
 }
 
+@injectable()
 class CreateGameService {
   constructor(
+    @inject('GamesRepository')
     private gamesRepository: IGamesRepository,
+    @inject('MethodsRepository')
     private methodsRepository: IMethodsRepository,
   ) {}
 

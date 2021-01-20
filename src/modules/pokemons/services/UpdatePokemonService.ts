@@ -1,3 +1,5 @@
+import { injectable, inject } from 'tsyringe';
+
 import AppError from '@shared/errors/AppError';
 
 import IPokemonsRepository from '../repositories/IPokemonsRepository';
@@ -9,8 +11,12 @@ interface IRequest {
   pokedex_number: number;
 }
 
+@injectable()
 class UpdatePokemonService {
-  constructor(private pokemonsRepository: IPokemonsRepository) {}
+  constructor(
+    @inject('PokemonsRepository')
+    private pokemonsRepository: IPokemonsRepository,
+  ) {}
 
   public async execute({
     id,

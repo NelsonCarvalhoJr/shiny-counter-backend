@@ -1,3 +1,5 @@
+import { injectable, inject } from 'tsyringe';
+
 import AppError from '@shared/errors/AppError';
 
 import IGamesRepository from '../repositories/IGamesRepository';
@@ -9,8 +11,12 @@ interface IRequest {
   generation_number: number;
 }
 
+@injectable()
 class UpdateGameService {
-  constructor(private gamesRepository: IGamesRepository) {}
+  constructor(
+    @inject('GamesRepository')
+    private gamesRepository: IGamesRepository,
+  ) {}
 
   public async execute({
     id,
