@@ -1,7 +1,6 @@
 import { injectable, inject } from 'tsyringe';
 
 import ILocationsRepository from '../repositories/ILocationsRepository';
-
 import Location from '../infra/typeorm/entities/Location';
 
 interface IRequest {

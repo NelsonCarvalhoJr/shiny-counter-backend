@@ -53,8 +53,8 @@ class GamesRepository implements IGamesRepository {
     return game;
   }
 
-  public async create(data: ICreateGameDTO): Promise<Game> {
-    const game = this.ormRepository.create(data);
+  public async create(gameData: ICreateGameDTO): Promise<Game> {
+    const game = this.ormRepository.create(gameData);
 
     await this.ormRepository.save(game);
 

@@ -1,7 +1,6 @@
 import { injectable, inject } from 'tsyringe';
 
 import IGamesRepository from '../repositories/IGamesRepository';
-
 import Game from '../infra/typeorm/entities/Game';
 
 interface IRequest {

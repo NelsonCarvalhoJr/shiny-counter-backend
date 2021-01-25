@@ -3,7 +3,6 @@ import { injectable, inject } from 'tsyringe';
 import AppError from '@shared/errors/AppError';
 
 import IPokemonsRepository from '../repositories/IPokemonsRepository';
-
 import Pokemon from '../infra/typeorm/entities/Pokemon';
 
 interface IRequest {

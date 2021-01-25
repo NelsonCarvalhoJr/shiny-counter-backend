@@ -1,6 +1,4 @@
 import { injectable, inject } from 'tsyringe';
-import { compare } from 'bcryptjs';
-import { sign } from 'jsonwebtoken';
 
 import authConfig from '@config/auth';
 
@@ -8,6 +6,9 @@ import AppError from '@shared/errors/AppError';
 
 import IUsersRepository from '../repositories/IUsersRepository';
 import User from '../infra/typeorm/entities/User';
+
+import IHashProvider from '../providers/HashProvider/models/IHashProvider';
+import ITokenProvider from '../providers/TokenProvider/models/ITokenProvider';
 
 interface IRequest {
   email: string;
@@ -24,6 +25,12 @@ class AuthenticateUserService {
   constructor(
     @inject('UsersRepository')
     private usersRepository: IUsersRepository,
+
+    @inject('HashProvider')
+    private hashProvider: IHashProvider,
+
+    @inject('TokenProvider')
+    private tokenProvider: ITokenProvider,
   ) {}
 
   public async execute({ email, password }: IRequest): Promise<IResponse> {
@@ -33,7 +40,10 @@ class AuthenticateUserService {
       throw new AppError('Invalid email/password combination', 401);
     }
 
-    const passwordMached = await compare(password, user?.password as string);
+    const passwordMached = await this.hashProvider.compareHash(
+      password,
+      user?.password as string,
+    );
 
     if (!passwordMached) {
       throw new AppError('Invalid email/password combination', 401);
@@ -41,7 +51,7 @@ class AuthenticateUserService {
 
     const { secret, expiresIn } = authConfig.jwt;
 
-    const token = sign({}, secret as string, {
+    const token = this.tokenProvider.signToken({}, secret as string, {
       subject: user.id,
       expiresIn,
     });

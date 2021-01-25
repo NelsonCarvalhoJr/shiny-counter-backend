@@ -17,21 +17,27 @@ import '@shared/container';
 const app = express();
 
 app.use(express.json());
-app.use('/files', express.static(uploadConfig.directory));
+app.use('/files', express.static(uploadConfig.uploadsFolder));
 app.use(routes);
 
 app.use(
   async (err: Error, request: Request, response: Response, _: NextFunction) => {
     if (request.file) {
       const userAvatarFilePath = path.join(
-        uploadConfig.directory,
+        uploadConfig.tmpFolder,
         request.file.filename,
       );
-      const userAvatarFileExists = await fs.promises.stat(userAvatarFilePath);
 
-      if (userAvatarFileExists) {
-        await fs.promises.unlink(userAvatarFilePath);
+      try {
+        await fs.promises.stat(userAvatarFilePath);
+      } catch {
+        return response.status(500).json({
+          status: 'error',
+          message: 'Internal Server Error',
+        });
       }
+
+      await fs.promises.unlink(userAvatarFilePath);
     }
 
     if (err instanceof AppError) {

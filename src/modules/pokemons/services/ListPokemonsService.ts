@@ -1,7 +1,6 @@
 import { injectable, inject } from 'tsyringe';
 
 import IPokemonsRepository from '../repositories/IPokemonsRepository';
-
 import Pokemon from '../infra/typeorm/entities/Pokemon';
 
 interface IRequest {

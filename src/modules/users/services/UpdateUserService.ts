@@ -1,10 +1,11 @@
 import { injectable, inject } from 'tsyringe';
-import { compare, hash } from 'bcryptjs';
 
 import AppError from '@shared/errors/AppError';
 
 import IUsersRepository from '../repositories/IUsersRepository';
 import User from '../infra/typeorm/entities/User';
+
+import IHashProvider from '../providers/HashProvider/models/IHashProvider';
 
 interface IRequest {
   id: string;
@@ -19,6 +20,9 @@ class UpdateUserService {
   constructor(
     @inject('UsersRepository')
     private usersRepository: IUsersRepository,
+
+    @inject('HashProvider')
+    private hashProvider: IHashProvider,
   ) {}
 
   public async execute({
@@ -44,7 +48,7 @@ class UpdateUserService {
     user.email = email;
 
     if (password) {
-      const comparePassword = await compare(
+      const comparePassword = await this.hashProvider.compareHash(
         old_password,
         user.password as string,
       );
@@ -53,7 +57,7 @@ class UpdateUserService {
         throw new AppError('Invalid old password');
       }
 
-      const hashedPassword = await hash(password, 8);
+      const hashedPassword = await this.hashProvider.generateHash(password);
 
       user.password = hashedPassword;
     }

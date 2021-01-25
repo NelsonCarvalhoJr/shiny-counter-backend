@@ -47,8 +47,8 @@ class LocationsRepository implements ILocationsRepository {
     return location;
   }
 
-  public async create({ name }: ICreateLocationDTO): Promise<Location> {
-    const location = this.ormRepository.create({ name });
+  public async create(locationData: ICreateLocationDTO): Promise<Location> {
+    const location = this.ormRepository.create(locationData);
 
     await this.ormRepository.save(location);
 

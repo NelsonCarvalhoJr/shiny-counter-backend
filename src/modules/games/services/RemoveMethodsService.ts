@@ -5,7 +5,6 @@ import AppError from '@shared/errors/AppError';
 import IMethodsRepository from '@modules/methods/repositories/IMethodsRepository';
 import IGamesRepository from '../repositories/IGamesRepository';
 import IGamesMethodsRepository from '../repositories/IGamesMethodsRepository';
-
 import Game from '../infra/typeorm/entities/Game';
 
 interface IRequest {

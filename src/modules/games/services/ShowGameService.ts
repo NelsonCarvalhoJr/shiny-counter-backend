@@ -3,7 +3,6 @@ import { injectable, inject } from 'tsyringe';
 import AppError from '@shared/errors/AppError';
 
 import IGamesRepository from '../repositories/IGamesRepository';
-
 import Game from '../infra/typeorm/entities/Game';
 
 interface IRequest {

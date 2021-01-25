@@ -1,7 +1,8 @@
 {
   "env": {
     "es6": true,
-    "node": true
+    "node": true,
+    "jest": true
   },
   "extends": [
     "airbnb-base",
@@ -48,7 +49,8 @@
       }
     ],
     "no-useless-constructor": "off",
-    "no-console": "off"
+    "no-console": "off",
+    "@typescript-eslint/ban-types": "off"
   },
   "settings": {
     "import/resolver": {

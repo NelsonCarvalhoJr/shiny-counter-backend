@@ -1,5 +1,8 @@
 import { container } from 'tsyringe';
 
+import '@modules/users/providers';
+import './providers';
+
 import IGamesRepository from '@modules/games/repositories/IGamesRepository';
 import GamesRepository from '@modules/games/infra/typeorm/repositories/GamesRepository';
 

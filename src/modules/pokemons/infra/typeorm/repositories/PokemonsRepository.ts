@@ -65,14 +65,8 @@ class PokemonsRepository implements IPokemonsRepository {
     return pokemon;
   }
 
-  public async create({
-    name,
-    pokedex_number,
-  }: ICreatePokemonDTO): Promise<Pokemon> {
-    const pokemon = this.ormRepository.create({
-      name,
-      pokedex_number,
-    });
+  public async create(pokemonData: ICreatePokemonDTO): Promise<Pokemon> {
+    const pokemon = this.ormRepository.create(pokemonData);
 
     await this.ormRepository.save(pokemon);
 

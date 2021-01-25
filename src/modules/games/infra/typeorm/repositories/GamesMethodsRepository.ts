@@ -27,14 +27,10 @@ class GamesMethodsRepository implements IGamesMethodsRepository {
     return gamesMethods;
   }
 
-  public async create({
-    game_id,
-    method_id,
-  }: ICreateGamesMethodsDTO): Promise<GamesMethods> {
-    const gamesMethods = this.ormRepository.create({
-      game_id,
-      method_id,
-    });
+  public async create(
+    gamesMethodsData: ICreateGamesMethodsDTO,
+  ): Promise<GamesMethods> {
+    const gamesMethods = this.ormRepository.create(gamesMethodsData);
 
     await this.ormRepository.save(gamesMethods);
 

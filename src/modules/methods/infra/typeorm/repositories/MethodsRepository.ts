@@ -72,10 +72,8 @@ class MethodsRepository implements IMethodsRepository {
     return method;
   }
 
-  public async create({ name }: ICreateMethodDTO): Promise<Method> {
-    const method = this.ormRepository.create({
-      name,
-    });
+  public async create(methodData: ICreateMethodDTO): Promise<Method> {
+    const method = this.ormRepository.create(methodData);
 
     await this.ormRepository.save(method);
 

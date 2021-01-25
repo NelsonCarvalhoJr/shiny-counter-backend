@@ -3,7 +3,6 @@ import { injectable, inject } from 'tsyringe';
 import AppError from '@shared/errors/AppError';
 
 import IMethodsRepository from '../repositories/IMethodsRepository';
-
 import Method from '../infra/typeorm/entities/Method';
 
 interface IRequest {
