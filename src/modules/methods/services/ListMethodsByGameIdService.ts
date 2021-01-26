@@ -5,7 +5,7 @@ import IMethodsRepository from '../repositories/IMethodsRepository';
 import Method from '../infra/typeorm/entities/Method';
 
 interface IRequest {
-  name: string;
+  name?: string;
   game_id: string;
 }
 

@@ -4,8 +4,8 @@ import IPokemonsRepository from '../repositories/IPokemonsRepository';
 import Pokemon from '../infra/typeorm/entities/Pokemon';
 
 interface IRequest {
-  name: string;
-  pokedex_number: number;
+  name?: string;
+  pokedex_number?: number;
 }
 
 @injectable()

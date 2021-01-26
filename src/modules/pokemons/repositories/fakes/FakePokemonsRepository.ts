@@ -6,13 +6,12 @@ import ICreatePokemonDTO from '@modules/pokemons/dtos/ICreatePokemonDTO';
 
 import Pokemon from '../../infra/typeorm/entities/Pokemon';
 
-class PokemonsRepository implements IPokemonsRepository {
+class FakePokemonsRepository implements IPokemonsRepository {
   private pokemons: Pokemon[] = [];
 
   public async all({
     name = '',
     pokedex_number,
-    order,
   }: IFindAllPokemonsDTO): Promise<Pokemon[]> {
     let filteredPokemons = this.pokemons.filter(pokemon =>
       pokemon.name.toLowerCase().includes(name.toLowerCase()),
@@ -22,32 +21,6 @@ class PokemonsRepository implements IPokemonsRepository {
       filteredPokemons = filteredPokemons.filter(
         pokemon => pokemon.pokedex_number === pokedex_number,
       );
-    }
-
-    if (order) {
-      const [field_name] = Object.keys(order);
-
-      if (field_name === 'name') {
-        filteredPokemons.sort((prev, next) => {
-          if (prev[field_name].toLowerCase() < next[field_name].toLowerCase()) {
-            return order[field_name] === 'ASC' ? -1 : 1;
-          }
-          if (prev[field_name].toLowerCase() > next[field_name].toLowerCase()) {
-            return order[field_name] === 'ASC' ? 1 : -1;
-          }
-          return 0;
-        });
-      } else if (field_name === 'pokedex_number') {
-        filteredPokemons.sort((prev, next) => {
-          if (prev[field_name] < next[field_name]) {
-            return order[field_name] === 'ASC' ? -1 : 1;
-          }
-          if (prev[field_name] > next[field_name]) {
-            return order[field_name] === 'ASC' ? 1 : -1;
-          }
-          return 0;
-        });
-      }
     }
 
     return filteredPokemons;
@@ -60,7 +33,9 @@ class PokemonsRepository implements IPokemonsRepository {
   }
 
   public async findByName(name: string): Promise<Pokemon | undefined> {
-    const findPokemon = this.pokemons.find(pokemon => pokemon.name === name);
+    const findPokemon = this.pokemons.find(
+      pokemon => pokemon.name.toLowerCase() === name.toLowerCase(),
+    );
 
     return findPokemon;
   }
@@ -80,24 +55,26 @@ class PokemonsRepository implements IPokemonsRepository {
 
     Object.assign(pokemon, { id: uuid() }, pokemonData);
 
+    this.pokemons.push(pokemon);
+
     return pokemon;
   }
 
   public async update(pokemon: Pokemon): Promise<Pokemon> {
-    const findIndex = this.pokemons.findIndex(
-      findPokemon => findPokemon.id === pokemon.id,
+    const pokemonIndex = this.pokemons.findIndex(
+      iterablePokemon => iterablePokemon.id === pokemon.id,
     );
 
-    this.pokemons[findIndex] = pokemon;
+    this.pokemons[pokemonIndex] = pokemon;
 
-    return this.pokemons[findIndex];
+    return this.pokemons[pokemonIndex];
   }
 
   public async delete(id: string): Promise<void> {
-    const findIndex = this.pokemons.findIndex(pokemon => pokemon.id === id);
+    const pokemonIndex = this.pokemons.findIndex(pokemon => pokemon.id === id);
 
-    this.pokemons.splice(findIndex, 1);
+    this.pokemons.splice(pokemonIndex, 1);
   }
 }
 
-export default PokemonsRepository;
+export default FakePokemonsRepository;
