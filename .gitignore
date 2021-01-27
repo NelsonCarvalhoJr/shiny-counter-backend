@@ -3,8 +3,6 @@ node_modules
 dist
 ormconfig.json
 .env
-# tmp/*.jpg
-# tmp/*.jpeg
-# tmp/*.png
-# tmp/uploads/*
+tmp/*.*
+tmp/uploads/*
 coverage
