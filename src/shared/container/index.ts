@@ -6,9 +6,6 @@ import './providers';
 import IGamesRepository from '@modules/games/repositories/IGamesRepository';
 import GamesRepository from '@modules/games/infra/typeorm/repositories/GamesRepository';
 
-import IGamesMethodsRepository from '@modules/games/repositories/IGamesMethodsRepository';
-import GamesMethodsRepository from '@modules/games/infra/typeorm/repositories/GamesMethodsRepository';
-
 import ILocationsRepository from '@modules/locations/repositories/ILocationsRepository';
 import LocationsRepository from '@modules/locations/infra/typeorm/repositories/LocationsRepository';
 
@@ -25,10 +22,7 @@ container.registerSingleton<IGamesRepository>(
   'GamesRepository',
   GamesRepository,
 );
-container.registerSingleton<IGamesMethodsRepository>(
-  'GamesMethodsRepository',
-  GamesMethodsRepository,
-);
+
 container.registerSingleton<ILocationsRepository>(
   'LocationsRepository',
   LocationsRepository,

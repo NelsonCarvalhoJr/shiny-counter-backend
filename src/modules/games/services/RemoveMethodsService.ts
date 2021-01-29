@@ -18,7 +18,7 @@ class RemoveMethodsService {
     private gamesRepository: IGamesRepository,
 
     @inject('MethodsRepository')
-    private methodsRepositorty: IMethodsRepository, // @inject('GamesMethodsRepository') // private gamesMethodsRepository: IGamesMethodsRepository,
+    private methodsRepositorty: IMethodsRepository,
   ) {}
 
   public async execute({ game_id, method_id }: IRequest): Promise<Game> {
