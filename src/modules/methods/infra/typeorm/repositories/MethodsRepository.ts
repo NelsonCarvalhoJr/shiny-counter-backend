@@ -1,10 +1,11 @@
-import { getRepository, Repository, Raw } from 'typeorm';
+import { getRepository, Repository, Raw, In } from 'typeorm';
 
 import IMethodsRepository from '@modules/methods/repositories/IMethodsRepository';
 import IFindAllMethodsDTO from '@modules/methods/dtos/IFindAllMethodsDTO';
 import IFindAllMethodsByGameIdDTO from '@modules/methods/dtos/IFindAllMethodsByGameIdDTO';
 import ICreateMethodDTO from '@modules/methods/dtos/ICreateMethodDTO';
 
+import GamesMethods from '@modules/games/infra/typeorm/entities/GamesMethods';
 import Method from '../entities/Method';
 
 class MethodsRepository implements IMethodsRepository {
@@ -86,6 +87,48 @@ class MethodsRepository implements IMethodsRepository {
 
   public async delete(id: string): Promise<void> {
     await this.ormRepository.delete(id);
+  }
+
+  public async addGamesMethods(
+    method: Method,
+    game_ids: string[],
+  ): Promise<Method> {
+    game_ids.forEach(game_id => {
+      const gamesMethods = new GamesMethods();
+
+      gamesMethods.method_id = method.id;
+      gamesMethods.game_id = game_id;
+
+      method.game_methods.push(gamesMethods);
+    });
+
+    await this.ormRepository.save(method);
+
+    return method;
+  }
+
+  public async removeGamesMethods(
+    method: Method,
+    game_ids: string[],
+  ): Promise<Method> {
+    const gamesMethodsRepository = getRepository(GamesMethods);
+
+    const gamesMethodsForDelete = await gamesMethodsRepository.find({
+      where: {
+        method_id: method.id,
+        game_id: In(game_ids),
+      },
+    });
+
+    await gamesMethodsRepository
+      .createQueryBuilder()
+      .delete()
+      .andWhereInIds(gamesMethodsForDelete.map(gamesMethods => gamesMethods.id))
+      .execute();
+
+    const savedMethod = await this.ormRepository.findOne(method.id);
+
+    return savedMethod as Method;
   }
 }
 

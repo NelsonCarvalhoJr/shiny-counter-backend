@@ -4,7 +4,6 @@ import AppError from '@shared/errors/AppError';
 
 import IMethodsRepository from '@modules/methods/repositories/IMethodsRepository';
 import IGamesRepository from '../repositories/IGamesRepository';
-import IGamesMethodsRepository from '../repositories/IGamesMethodsRepository';
 import Game from '../infra/typeorm/entities/Game';
 
 interface IRequest {
@@ -20,9 +19,6 @@ class AddMethodsService {
 
     @inject('MethodsRepository')
     private methodsRepositorty: IMethodsRepository,
-
-    @inject('GamesMethodsRepository')
-    private gamesMethodsRepository: IGamesMethodsRepository,
   ) {}
 
   public async execute({ game_id, method_id }: IRequest): Promise<Game> {
@@ -43,41 +39,58 @@ class AddMethodsService {
         );
       });
 
+      if (invalidMethodIds.length) {
+        throw new AppError(
+          `Method(s) ID(s) ${JSON.stringify(invalidMethodIds)
+            .split('"')
+            .join('')} doesn't exist(s)`,
+          404,
+        );
+      }
+
+      const orderedMethods = method_id.sort();
+
+      const repeatMethods: string[] = [];
+
+      orderedMethods.forEach((method, index) => {
+        if (index) {
+          if (orderedMethods[index - 1] === method) {
+            repeatMethods.push(method);
+          }
+        }
+      });
+
       throw new AppError(
-        `Method(s) ID(s) ${JSON.stringify(invalidMethodIds)
-          .split('"')
-          .join('')} doesn't exist(s)`,
-        404,
+        `Method(s) ID(s) ${JSON.stringify(
+          repeatMethods,
+        )} are repeated in request`,
       );
     }
 
-    const methodsInGame = await this.gamesMethodsRepository.all({
-      method_id,
-      game_id,
+    const methodsInGame = game.game_methods;
+
+    const methodIdsFound = methodsInGame.map(method => method.method_id);
+
+    const invalidMethods = method_id.filter(method => {
+      return (
+        methodIdsFound.findIndex(methodFound => methodFound === method) >= 0
+      );
     });
 
-    if (methodsInGame.length > 0) {
-      const methodIdsFound = methodsInGame.map(method => method.method_id);
-
+    if (invalidMethods.length) {
       throw new AppError(
-        `Method(s) ID(s) ${JSON.stringify(methodIdsFound)
+        `Method(s) ID(s) ${JSON.stringify(invalidMethods)
           .split('"')
           .join('')} already exist(s) in this game`,
       );
     }
 
-    const gamesMethods = methods.map(method => {
-      return this.gamesMethodsRepository.create({
-        game_id: game?.id,
-        method_id: method.id,
-      });
-    });
+    const savedGame = await this.gamesRepository.addGamesMethods(
+      game,
+      method_id,
+    );
 
-    const savedMethods = await Promise.all(gamesMethods);
-
-    game.game_methods = savedMethods;
-
-    return game;
+    return savedGame;
   }
 }
 

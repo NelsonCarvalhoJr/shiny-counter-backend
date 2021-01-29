@@ -15,19 +15,19 @@ describe('ListMethodsByGameId', () => {
     });
 
     const resetMethod = await fakeMethodsRepository.create({
-      name: 'Soft Reset',
+      name: 'Reset',
     });
 
     await fakeMethodsRepository.create({
       name: 'Dynamax Adventure',
     });
 
-    await fakeMethodsRepository.addGamesMethods(masudaMethod.id, 'a-game-id');
+    await fakeMethodsRepository.addGamesMethods(masudaMethod, ['a-game-id-1']);
 
-    await fakeMethodsRepository.addGamesMethods(resetMethod.id, 'a-game-id');
+    await fakeMethodsRepository.addGamesMethods(resetMethod, ['a-game-id-1']);
 
     const methods = await listMethodsByGameId.execute({
-      game_id: 'a-game-id',
+      game_id: 'a-game-id-1',
     });
 
     expect(methods.length).toBe(2);
@@ -45,20 +45,20 @@ describe('ListMethodsByGameId', () => {
     });
 
     const resetMethod = await fakeMethodsRepository.create({
-      name: 'Soft Reset',
+      name: 'Reset',
     });
 
     await fakeMethodsRepository.create({
       name: 'Dynamax Adventure',
     });
 
-    await fakeMethodsRepository.addGamesMethods(masudaMethod.id, 'a-game-id');
+    await fakeMethodsRepository.addGamesMethods(masudaMethod, ['a-game-id-1']);
 
-    await fakeMethodsRepository.addGamesMethods(resetMethod.id, 'a-game-id');
+    await fakeMethodsRepository.addGamesMethods(resetMethod, ['a-game-id-1']);
 
     const methods = await listMethodsByGameId.execute({
-      game_id: 'a-game-id',
-      name: 'soft',
+      game_id: 'a-game-id-1',
+      name: 'reset',
     });
 
     expect(methods.length).toBe(1);

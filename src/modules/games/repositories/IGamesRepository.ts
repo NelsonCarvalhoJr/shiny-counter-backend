@@ -10,4 +10,6 @@ export default interface IGamesRepository {
   create(data: ICreateGameDTO): Promise<Game>;
   update(game: Game): Promise<Game>;
   delete(id: string): Promise<void>;
+  addGamesMethods(game: Game, method_ids: string[]): Promise<Game>;
+  removeGamesMethods(game: Game, method_ids: string[]): Promise<Game>;
 }

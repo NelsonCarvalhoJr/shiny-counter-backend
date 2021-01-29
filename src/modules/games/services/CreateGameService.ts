@@ -9,7 +9,7 @@ import Game from '../infra/typeorm/entities/Game';
 interface IRequest {
   name: string;
   generation_number: number;
-  method_id: string[];
+  method_id?: string[];
 }
 
 @injectable()
@@ -43,11 +43,31 @@ class CreateGameService {
         );
       });
 
+      if (invalidMethodIds.length) {
+        throw new AppError(
+          `Method(s) ID(s) ${JSON.stringify(invalidMethodIds)
+            .split('"')
+            .join('')} doesn't exist(s)`,
+          404,
+        );
+      }
+
+      const orderedMethods = method_id.sort();
+
+      const repeatMethods: string[] = [];
+
+      orderedMethods.forEach((method, index) => {
+        if (index) {
+          if (orderedMethods[index - 1] === method) {
+            repeatMethods.push(method);
+          }
+        }
+      });
+
       throw new AppError(
-        `Method(s) ID(s) ${JSON.stringify(invalidMethodIds)
-          .split('"')
-          .join('')} doesn't exist(s)`,
-        404,
+        `Method(s) ID(s) ${JSON.stringify(
+          repeatMethods,
+        )} are repeated in request`,
       );
     }
 

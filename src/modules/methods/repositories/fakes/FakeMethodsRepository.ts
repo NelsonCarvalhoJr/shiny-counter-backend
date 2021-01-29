@@ -28,10 +28,6 @@ class FakeMethodsRepository implements IMethodsRepository {
     );
 
     filteredMethods = filteredMethods.filter(method => {
-      if (!method.game_methods) {
-        return false;
-      }
-
       return (
         method.game_methods.filter(
           games_methods => games_methods.game_id === game_id,
@@ -67,6 +63,8 @@ class FakeMethodsRepository implements IMethodsRepository {
 
     Object.assign(method, methodData, { id: uuid() });
 
+    method.game_methods = [];
+
     this.methods.push(method);
 
     return method;
@@ -89,26 +87,47 @@ class FakeMethodsRepository implements IMethodsRepository {
   }
 
   public async addGamesMethods(
-    method_id: string,
-    game_id: string,
-  ): Promise<void> {
+    method: Method,
+    game_ids: string[],
+  ): Promise<Method> {
     const methodIndex = this.methods.findIndex(
-      method => method.id === method_id,
+      iterableMethod => iterableMethod.id === method.id,
     );
 
-    const gamesMethods = new GamesMethods();
+    game_ids.forEach(game_id => {
+      const gamesMethods = new GamesMethods();
 
-    Object.assign(gamesMethods, {
-      id: uuid(),
-      method_id,
-      game_id,
+      Object.assign(gamesMethods, {
+        id: uuid(),
+        method_id: method.id,
+        game_id,
+      });
+
+      this.methods[methodIndex].game_methods.push(gamesMethods);
     });
 
-    if (!this.methods[methodIndex].game_methods) {
-      this.methods[methodIndex].game_methods = [];
-    }
+    return this.methods[methodIndex];
+  }
 
-    this.methods[methodIndex].game_methods.push(gamesMethods);
+  public async removeGamesMethods(
+    method: Method,
+    game_ids: string[],
+  ): Promise<Method> {
+    const methodIndex = this.methods.findIndex(
+      iterableMethod => iterableMethod.id === method.id,
+    );
+
+    game_ids.forEach(game_id => {
+      const gameIndex = this.methods[methodIndex].game_methods.findIndex(
+        games_methods => games_methods.game_id === game_id,
+      );
+
+      if (gameIndex >= 0) {
+        this.methods[methodIndex].game_methods.splice(gameIndex, 1);
+      }
+    });
+
+    return this.methods[methodIndex];
   }
 }
 

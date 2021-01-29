@@ -4,8 +4,8 @@ import IGamesRepository from '../repositories/IGamesRepository';
 import Game from '../infra/typeorm/entities/Game';
 
 interface IRequest {
-  name: string;
-  generation_number: number;
+  name?: string;
+  generation_number?: number;
 }
 
 @injectable()

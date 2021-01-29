@@ -33,6 +33,8 @@ class UsersController {
       id,
     });
 
+    delete user.password;
+
     return response.json(user);
   }
 

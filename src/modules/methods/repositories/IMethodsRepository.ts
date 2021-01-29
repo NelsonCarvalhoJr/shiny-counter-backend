@@ -13,4 +13,6 @@ export default interface IMethodsRepository {
   create(data: ICreateMethodDTO): Promise<Method>;
   update(method: Method): Promise<Method>;
   delete(id: string): Promise<void>;
+  addGamesMethods(method: Method, game_ids: string[]): Promise<Method>;
+  removeGamesMethods(method: Method, game_ids: string[]): Promise<Method>;
 }
